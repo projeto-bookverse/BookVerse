@@ -1,0 +1,12 @@
+### Cadastrar um usuário
+POST http://localhost:8080/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Leitora Teste",
+  "email": "leitora.teste@example.com",
+  "senha": "senha-de-teste-segura",
+  "dataNascimento": "2000-01-15",
+  "fotoPerfil": "https://example.com/foto.jpg",
+  "bio": "Gosto de romances e ficção."
+}
