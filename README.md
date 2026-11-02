@@ -10,7 +10,9 @@ O DTO UsuarioCadastroRequest.java define a estrutura dos dados recebidos pela AP
 
 2. Validação das informações
 
-A lógica de validação é implementada em UsuarioService.java. Nessa etapa, o sistema verifica o preenchimento dos campos obrigatórios, remove espaços em branco das extremidades do nome e do e-mail e verifica se o endereço de e-mail já está cadastrado.
+A lógica de validação é implementada em UsuarioService.java. Nessa etapa, o sistema verifica o preenchimento dos campos obrigatórios, remove espaços em branco das extremidades do nome e do e-mail, converte o e-mail para letras minúsculas e verifica se o endereço de e-mail já está cadastrado.
+
+Também são aplicadas as seguintes regras: nome e e-mail com no máximo 150 caracteres, e-mail em formato válido, senha com pelo menos 8 caracteres, data de nascimento que não esteja no futuro e endereço da foto de perfil com no máximo 255 caracteres.
 
 3. Proteção da senha
 
@@ -30,6 +32,8 @@ A API retorna os seguintes códigos HTTP conforme o resultado da operação:
 
 409 Conflict: e-mail já cadastrado.
 
+Os erros seguem o formato Problem Details do Spring: o corpo da resposta traz o código de status, o nome do status e, no campo detail, a mensagem que deve ser exibida ao usuário. O tratamento é centralizado em TratadorGlobalDeErros.java.
+
 A classe UsuarioResponse.java define os dados retornados pela API, sem incluir a senha em texto puro nem seu hash.
 
 6. Verificação do cadastro no banco de dados
@@ -38,4 +42,4 @@ Após realizar o cadastro, é possível acessar o banco de dados do BookVerse pa
 
 Conclusão
 
-O processo de cadastro do BookVerse integra uma API REST, validação de dados, proteção de senhas e persistência em banco de dados relacional. Essa estrutura permite registrar novos usuários de forma organizada, tratar erros de cadastro e evitar a exposição de informações sensíveis nas respostas da AP
+O processo de cadastro do BookVerse integra uma API REST, validação de dados, proteção de senhas e persistência em banco de dados relacional. Essa estrutura permite registrar novos usuários de forma organizada, tratar erros de cadastro e evitar a exposição de informações sensíveis nas respostas da API.
