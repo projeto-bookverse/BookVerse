@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -45,6 +46,10 @@ public class Avaliacao {
 	@CreationTimestamp
 	@Column(name = "criado_em", nullable = false, updatable = false)
 	private LocalDateTime criadoEm;
+
+	@UpdateTimestamp
+	@Column(name = "atualizado_em", nullable = false)
+	private LocalDateTime atualizadoEm;
 
 	public Avaliacao() {
 	}
@@ -101,5 +106,9 @@ public class Avaliacao {
 
 	public LocalDateTime getCriadoEm() {
 		return criadoEm;
+	}
+
+	public LocalDateTime getAtualizadoEm() {
+		return atualizadoEm;
 	}
 }

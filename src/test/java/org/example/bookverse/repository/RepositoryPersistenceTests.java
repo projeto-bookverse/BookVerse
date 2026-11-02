@@ -91,8 +91,21 @@ class RepositoryPersistenceTests {
 
 		assertNotNull(avaliacao.getId());
 		assertNotNull(avaliacao.getCriadoEm());
+		assertNotNull(avaliacao.getAtualizadoEm());
 		assertFalse(avaliacao.isFlagSpoiler());
 		assertEquals(1, avaliacaoRepository.findByLivroId(livro.getId()).size());
+	}
+
+	@Test
+	void naoDeveSalvarAvaliacaoDuplicadaParaUsuarioELivro() {
+		Usuario usuario = usuarioRepository.save(novoUsuario());
+		Livro livro = livroRepository.save(novoLivro());
+		avaliacaoRepository.saveAndFlush(new Avaliacao(usuario, livro, (short) 4));
+
+		Avaliacao duplicada = new Avaliacao(usuario, livro, (short) 5);
+
+		assertThrows(DataIntegrityViolationException.class,
+				() -> avaliacaoRepository.saveAndFlush(duplicada));
 	}
 
 	@Test
