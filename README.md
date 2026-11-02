@@ -1,45 +1,50 @@
-Funcionamento do Cadastro de Usuários — BookVerse
+# BookVerse API
 
-O cadastro de usuários do BookVerse é realizado por meio do endpoint POST /usuarios, implementado na classe UsuarioController.java.
+API REST da plataforma BookVerse, em que leitores organizam a estante
+pessoal (quero ler, lendo, lido, abandonado) e avaliam livros com nota de 1 a 5
+estrelas e resenha opcional.
 
-1. Recebimento dos dados
+## Tecnologias
 
-A API recebe os dados enviados pelo usuário. Os campos obrigatórios são nome, email, senha e dataNascimento. Os campos fotoPerfil e bio são opcionais e podem ser enviados vazios ou como null, quando aplicável.
+Java 17 · Spring Boot 4.1.1 (Web MVC, Data JPA) · Hibernate 7 · PostgreSQL · Maven Wrapper
 
-O DTO UsuarioCadastroRequest.java define a estrutura dos dados recebidos pela API.
+## Pré-requisitos
 
-2. Validação das informações
+- JDK 17 ou superior
+- PostgreSQL em `localhost:5432` com o banco `bookverse` e as tabelas
+  `usuarios`, `livros`, `estante_usuario` e `avaliacoes`
+- Variável de ambiente `DB_PASSWORD` com a senha do usuário `postgres`
 
-A lógica de validação é implementada em UsuarioService.java. Nessa etapa, o sistema verifica o preenchimento dos campos obrigatórios, remove espaços em branco das extremidades do nome e do e-mail, converte o e-mail para letras minúsculas e verifica se o endereço de e-mail já está cadastrado.
+## Como executar
 
-Também são aplicadas as seguintes regras: nome e e-mail com no máximo 150 caracteres, e-mail em formato válido, senha com pelo menos 8 caracteres, data de nascimento que não esteja no futuro e endereço da foto de perfil com no máximo 255 caracteres.
+```powershell
+$env:DB_PASSWORD = "sua_senha"
+.\mvnw.cmd spring-boot:run
+```
 
-3. Proteção da senha
+A API fica disponível em `http://localhost:8080`.
 
-Por segurança, a senha não é armazenada em texto puro no banco de dados. Antes de ser persistida, ela é transformada em hash utilizando PBKDF2 com SHA-256, conforme a implementação de SenhaHashService.java.
+## Testes
 
-4. Persistência no banco de dados
+```powershell
+.\mvnw.cmd test
+```
 
-Após a validação, os dados são armazenados na tabela usuarios do banco de dados do BookVerse. Conforme a implementação de Usuario.java, o identificador do usuário é gerado no formato UUID, a data de cadastro é preenchida automaticamente e a conta recebe o tipo LEITOR.
+Os testes rodam no PostgreSQL local e desfazem tudo ao final.
 
-5. Respostas da API
+## Estrutura do código
 
-A API retorna os seguintes códigos HTTP conforme o resultado da operação:
+| Pacote | Conteúdo |
+| --- | --- |
+| `controller` | Endpoints REST |
+| `service` | Regras de negócio |
+| `dto` | Formatos de entrada e saída da API |
+| `repository` | Acesso ao banco |
+| `entity` | Entidades que espelham as tabelas |
+| `exception` | Exceções e tratamento padronizado de erros |
 
-201 Created: cadastro realizado com sucesso.
+## Documentação
 
-400 Bad Request: campos obrigatórios ausentes ou dados inválidos, conforme as validações implementadas.
-
-409 Conflict: e-mail já cadastrado.
-
-Os erros seguem o formato Problem Details do Spring: o corpo da resposta traz o código de status, o nome do status e, no campo detail, a mensagem que deve ser exibida ao usuário. O tratamento é centralizado em TratadorGlobalDeErros.java.
-
-A classe UsuarioResponse.java define os dados retornados pela API, sem incluir a senha em texto puro nem seu hash.
-
-6. Verificação do cadastro no banco de dados
-
-Após realizar o cadastro, é possível acessar o banco de dados do BookVerse para verificar se o usuário foi registrado corretamente. Essa consulta permite conferir as informações cadastrais, como identificador, nome, e-mail, data de cadastro e tipo de conta, sem expor dados de autenticação.
-
-Conclusão
-
-O processo de cadastro do BookVerse integra uma API REST, validação de dados, proteção de senhas e persistência em banco de dados relacional. Essa estrutura permite registrar novos usuários de forma organizada, tratar erros de cadastro e evitar a exposição de informações sensíveis nas respostas da API.
+- [Comandos do projeto](docs/comandos.md), incluindo a carga do catálogo de livros
+- [Funcionamento do cadastro de usuários](docs/cadastro-de-usuarios.md)
+- [Requisições de exemplo](requisicoes.http)

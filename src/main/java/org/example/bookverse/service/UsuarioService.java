@@ -4,8 +4,8 @@ import org.example.bookverse.dto.UsuarioCadastroRequest;
 import org.example.bookverse.dto.UsuarioResponse;
 import org.example.bookverse.entity.Usuario;
 import org.example.bookverse.entity.enums.TipoConta;
+import org.example.bookverse.exception.ConflitoException;
 import org.example.bookverse.exception.DadosInvalidosException;
-import org.example.bookverse.exception.EmailJaCadastradoException;
 import org.example.bookverse.repository.UsuarioRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,6 +27,7 @@ public class UsuarioService {
 
 	private static final Pattern FORMATO_EMAIL = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 	private static final String RESTRICAO_EMAIL_UNICO = "usuarios_email_key";
+	private static final String MENSAGEM_EMAIL_CADASTRADO = "Já existe um usuário cadastrado com o e-mail: ";
 
 	private final UsuarioRepository usuarioRepository;
 	private final SenhaHashService senhaHashService;
@@ -42,7 +43,7 @@ public class UsuarioService {
 
 		String email = request.email().trim().toLowerCase(Locale.ROOT);
 		if (usuarioRepository.findByEmail(email).isPresent()) {
-			throw new EmailJaCadastradoException(email);
+			throw new ConflitoException(MENSAGEM_EMAIL_CADASTRADO + email);
 		}
 
 		Usuario usuario = new Usuario(
@@ -60,7 +61,7 @@ public class UsuarioService {
 			// Dois cadastros simultâneos com o mesmo e-mail passam pela checagem acima;
 			// o segundo é barrado pela restrição única do banco.
 			if (violouRestricao(exception, RESTRICAO_EMAIL_UNICO)) {
-				throw new EmailJaCadastradoException(email);
+				throw new ConflitoException(MENSAGEM_EMAIL_CADASTRADO + email);
 			}
 			throw exception;
 		}

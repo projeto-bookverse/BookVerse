@@ -1,8 +1,7 @@
-# Comandos do BookVerse — 20/10/2026
+# Comandos do BookVerse
 
 Este documento reúne os comandos padrão para trabalhar com o BookVerse em
-Windows/PowerShell. É uma referência do projeto, não um registro confirmado dos
-comandos que foram executados nesta data.
+Windows/PowerShell.
 
 ## Pré-requisitos
 
@@ -30,6 +29,21 @@ A aplicação fica disponível em `http://localhost:8080`. A execução precisa
 conseguir conectar ao PostgreSQL configurado.
 
 ## Executar os testes
+
+## Carregar o catálogo de livros
+
+O catálogo inicial (54 livros, com ISBN, capa e sinopse) fica em
+`src/test/resources/seed/livros.json` e é gravado no banco por um teste
+desativado por padrão. Para executá-lo:
+
+```powershell
+$env:DB_PASSWORD = "sua_senha"
+.\mvnw.cmd test "-Dtest=LivroSeedTests" "-Dbookverse.seed=true"
+```
+
+- Pode ser executado mais de uma vez: livros já existentes (mesmo ISBN, ou
+  mesmo título e autor quando não há ISBN) são atualizados, não duplicados.
+- Para conferir no pgAdmin: `SELECT count(*) FROM livros;`
 
 ```powershell
 .\mvnw.cmd test
