@@ -1,41 +1,76 @@
-Funcionamento do Cadastro de Usuários — BookVerse
+# BookVerse API
 
-O cadastro de usuários do BookVerse é realizado por meio do endpoint POST /usuarios, implementado na classe UsuarioController.java.
+API REST da plataforma BookVerse, em que leitores organizam a estante
+pessoal (quero ler, lendo, lido, abandonado) e avaliam livros com nota de 1 a 5
+estrelas e resenha.
 
-1. Recebimento dos dados
+## Tecnologias
 
-A API recebe os dados enviados pelo usuário. Os campos obrigatórios são nome, email, senha e dataNascimento. Os campos fotoPerfil e bio são opcionais e podem ser enviados vazios ou como null, quando aplicável.
+Java 17 · Spring Boot 4.1.1 (Web MVC, Data JPA) · Hibernate 7 · PostgreSQL · Maven Wrapper
 
-O DTO UsuarioCadastroRequest.java define a estrutura dos dados recebidos pela API.
+## Pré-requisitos
 
-2. Validação das informações
+- JDK 17 ou superior
+- PostgreSQL em `localhost:5432` com o banco `bookverse` e as tabelas
+  `usuarios`, `livros`, `estante_usuario` e `avaliacoes`
+- Variável de ambiente `DB_PASSWORD` com a senha do usuário `postgres`
 
-A lógica de validação é implementada em UsuarioService.java. Nessa etapa, o sistema verifica o preenchimento dos campos obrigatórios, remove espaços em branco das extremidades do nome e do e-mail e verifica se o endereço de e-mail já está cadastrado.
+## Como executar
 
-3. Proteção da senha
+```powershell
+$env:DB_PASSWORD = "sua_senha"
+.\mvnw.cmd spring-boot:run
+```
 
-Por segurança, a senha não é armazenada em texto puro no banco de dados. Antes de ser persistida, ela é transformada em hash utilizando PBKDF2 com SHA-256, conforme a implementação de SenhaHashService.java.
+A API fica disponível em `http://localhost:8080`.
 
-4. Persistência no banco de dados
+## Testes
 
-Após a validação, os dados são armazenados na tabela usuarios do banco de dados do BookVerse. Conforme a implementação de Usuario.java, o identificador do usuário é gerado no formato UUID, a data de cadastro é preenchida automaticamente e a conta recebe o tipo LEITOR.
+```powershell
+.\mvnw.cmd test
+```
 
-5. Respostas da API
+Os testes rodam no PostgreSQL local e desfazem tudo ao final.
 
-A API retorna os seguintes códigos HTTP conforme o resultado da operação:
+## Estrutura do código
 
-201 Created: cadastro realizado com sucesso.
+| Pacote | Conteúdo |
+| --- | --- |
+| `controller` | Endpoints REST |
+| `service` | Regras de negócio |
+| `dto` | Formatos de entrada e saída da API |
+| `repository` | Acesso ao banco |
+| `entity` | Entidades que espelham as tabelas |
+| `exception` | Exceções e tratamento padronizado de erros |
 
-400 Bad Request: campos obrigatórios ausentes ou dados inválidos, conforme as validações implementadas.
+## Resenhas e avaliações
 
-409 Conflict: e-mail já cadastrado.
+Cada usuário pode avaliar um livro uma única vez, com uma nota de 1 a 5
+estrelas, escrever uma resenha de até 5000 caracteres e indicar se o texto
+contém spoilers. A avaliação fica vinculada a um usuário e a um livro
+existentes e registra as datas de criação e atualização.
 
-A classe UsuarioResponse.java define os dados retornados pela API, sem incluir a senha em texto puro nem seu hash.
+Endpoints disponíveis:
 
-6. Verificação do cadastro no banco de dados
+- `POST /avaliacoes`: cadastra uma avaliação.
+- `GET /livros/{id}/avaliacoes`: lista as avaliações de um livro.
+- `GET /usuarios/{id}/avaliacoes`: lista as avaliações de um usuário.
+- `GET /avaliacoes/{id}`: consulta uma avaliação.
+- `PUT /avaliacoes/{id}`: atualiza uma avaliação.
+- `DELETE /avaliacoes/{id}?usuarioId={id}`: exclui uma avaliação.
 
-Após realizar o cadastro, é possível acessar o banco de dados do BookVerse para verificar se o usuário foi registrado corretamente. Essa consulta permite conferir as informações cadastrais, como identificador, nome, e-mail, data de cadastro e tipo de conta, sem expor dados de autenticação.
+Os erros seguem o formato Problem Details. A migração
+`src/main/resources/db/migration/V1__adiciona_atualizado_em_avaliacoes.sql`
+adiciona a coluna `atualizado_em` à tabela `avaliacoes` e deve ser aplicada ao
+banco existente antes de iniciar a aplicação.
 
-Conclusão
+O projeto ainda não possui autenticação. A titularidade é conferida pelo ID
+informado na requisição, portanto a identificação segura do autor dependerá de
+uma futura integração com autenticação.
 
-O processo de cadastro do BookVerse integra uma API REST, validação de dados, proteção de senhas e persistência em banco de dados relacional. Essa estrutura permite registrar novos usuários de forma organizada, tratar erros de cadastro e evitar a exposição de informações sensíveis nas respostas da AP
+## Documentação
+
+- [Comandos do projeto](docs/comandos.md), incluindo a carga do catálogo de livros
+- [Funcionamento do cadastro de usuários](docs/cadastro-de-usuarios.md)
+- [Detalhes das resenhas e avaliações](docs/resenhas-e-avaliacoes.md)
+- [Requisições de exemplo](requisicoes.http)
