@@ -18,8 +18,8 @@ public class TratadorGlobalDeErros {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
 	}
 
-	@ExceptionHandler(EmailJaCadastradoException.class)
-	public ProblemDetail tratarEmailDuplicado(EmailJaCadastradoException exception) {
+	@ExceptionHandler(ConflitoException.class)
+	public ProblemDetail tratarConflito(ConflitoException exception) {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
 	}
 }
