@@ -10,3 +10,16 @@ Content-Type: application/json
   "fotoPerfil": "https://example.com/foto.jpg",
   "bio": "Gosto de romances e ficção."
 }
+
+### Cadastrar um livro
+POST http://localhost:8080/livros
+Content-Type: application/json
+
+{
+  "titulo": "Vidas Secas",
+  "autor": "Graciliano Ramos",
+  "genero": "Romance",
+  "isbn": "978-85-01-08529-0",
+  "anoPublicacao": 1938,
+  "numPaginas": 176
+}
