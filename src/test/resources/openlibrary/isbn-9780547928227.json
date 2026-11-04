@@ -1,0 +1,57 @@
+{
+  "ISBN:9780547928227": {
+    "url": "http://openlibrary.org/books/OL33891995M/The_Hobbit",
+    "key": "/books/OL33891995M",
+    "title": "The Hobbit",
+    "authors": [
+      {
+        "url": "http://openlibrary.org/authors/OL26320A/J.R.R._Tolkien",
+        "name": "J.R.R. Tolkien"
+      }
+    ],
+    "number_of_pages": 300,
+    "identifiers": {
+      "goodreads": [
+        "44293307"
+      ],
+      "isbn_10": [
+        "054792822X"
+      ],
+      "isbn_13": [
+        "9780547928227"
+      ],
+      "oclc": [
+        "772099491",
+        "993990772"
+      ],
+      "openlibrary": [
+        "OL33891995M"
+      ]
+    },
+    "publishers": [
+      {
+        "name": "Mariner Books"
+      }
+    ],
+    "publish_date": "2012",
+    "subjects": [
+      {
+        "name": "Fantasy",
+        "url": "https://openlibrary.org/subjects/fantasy"
+      },
+      {
+        "name": "Arkenstone",
+        "url": "https://openlibrary.org/subjects/arkenstone"
+      },
+      {
+        "name": "Battle of Five Armies",
+        "url": "https://openlibrary.org/subjects/battle_of_five_armies"
+      }
+    ],
+    "cover": {
+      "small": "https://covers.openlibrary.org/b/id/12003329-S.jpg",
+      "medium": "https://covers.openlibrary.org/b/id/12003329-M.jpg",
+      "large": "https://covers.openlibrary.org/b/id/12003329-L.jpg"
+    }
+  }
+}
