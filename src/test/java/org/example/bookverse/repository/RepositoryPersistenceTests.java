@@ -96,6 +96,18 @@ class RepositoryPersistenceTests {
 	}
 
 	@Test
+	void naoDeveSalvarAvaliacaoDuplicadaParaUsuarioELivro() {
+		Usuario usuario = usuarioRepository.save(novoUsuario());
+		Livro livro = livroRepository.save(novoLivro());
+		avaliacaoRepository.saveAndFlush(new Avaliacao(usuario, livro, (short) 4));
+
+		Avaliacao duplicada = new Avaliacao(usuario, livro, (short) 5);
+
+		assertThrows(DataIntegrityViolationException.class,
+				() -> avaliacaoRepository.saveAndFlush(duplicada));
+	}
+
+	@Test
 	void naoDeveSalvarAvaliacaoComNotaForaDoIntervalo() {
 		Usuario usuario = usuarioRepository.save(novoUsuario());
 		Livro livro = livroRepository.save(novoLivro());

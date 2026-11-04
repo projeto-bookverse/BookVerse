@@ -47,4 +47,5 @@ Os testes rodam no PostgreSQL local e desfazem tudo ao final.
 
 - [Comandos do projeto](docs/comandos.md), incluindo a carga do catálogo de livros
 - [Funcionamento do cadastro de usuários](docs/cadastro-de-usuarios.md)
+- [Resenhas e avaliações](docs/resenhas-e-avaliacoes.md)
 - [Requisições de exemplo](requisicoes.http)

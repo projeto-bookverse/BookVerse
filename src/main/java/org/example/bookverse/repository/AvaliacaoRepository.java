@@ -9,4 +9,10 @@ import java.util.UUID;
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, UUID> {
 
 	List<Avaliacao> findByLivroId(UUID livroId);
+
+	List<Avaliacao> findByLivroIdOrderByCriadoEmDesc(UUID livroId);
+
+	List<Avaliacao> findByUsuarioIdOrderByCriadoEmDesc(UUID usuarioId);
+
+	boolean existsByUsuarioIdAndLivroId(UUID usuarioId, UUID livroId);
 }
