@@ -91,7 +91,6 @@ class RepositoryPersistenceTests {
 
 		assertNotNull(avaliacao.getId());
 		assertNotNull(avaliacao.getCriadoEm());
-		assertNotNull(avaliacao.getAtualizadoEm());
 		assertFalse(avaliacao.isFlagSpoiler());
 		assertEquals(1, avaliacaoRepository.findByLivroId(livro.getId()).size());
 	}

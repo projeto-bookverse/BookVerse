@@ -3,9 +3,9 @@ package org.example.bookverse.controller;
 import org.example.bookverse.dto.AvaliacaoAtualizacaoRequest;
 import org.example.bookverse.dto.AvaliacaoCadastroRequest;
 import org.example.bookverse.dto.AvaliacaoResponse;
-import org.example.bookverse.exception.AcessoAvaliacaoNegadoException;
-import org.example.bookverse.exception.AvaliacaoDuplicadaException;
-import org.example.bookverse.exception.RecursoAvaliacaoNaoEncontradoException;
+import org.example.bookverse.exception.AcessoNegadoException;
+import org.example.bookverse.exception.ConflitoException;
+import org.example.bookverse.exception.RecursoNaoEncontradoException;
 import org.example.bookverse.service.AvaliacaoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,19 +67,23 @@ class AvaliacaoControllerTests {
 								{"usuarioId":"%s","livroId":"%s","nota":6,"textoResenha":"Resenha","flagSpoiler":false}
 								""".formatted(UUID.randomUUID(), UUID.randomUUID())))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.detail").isNotEmpty())
+				.andExpect(jsonPath("$.detail").value("A nota deve ser entre 1 e 5."))
 				.andExpect(jsonPath("$.status").value(400));
 	}
 
 	@Test
-	void deveRejeitarResenhaVaziaComProblemDetails() throws Exception {
+	void deveAceitarAvaliacaoSemResenha() throws Exception {
+		// A resenha é opcional (RN19): o usuário pode avaliar só com as estrelas.
+		UUID id = UUID.randomUUID();
+		when(avaliacaoService.cadastrar(any(AvaliacaoCadastroRequest.class)))
+				.thenReturn(response(id, UUID.randomUUID(), UUID.randomUUID()));
+
 		mockMvc.perform(post("/avaliacoes")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("""
-								{"usuarioId":"%s","livroId":"%s","nota":4,"textoResenha":"  ","flagSpoiler":false}
+								{"usuarioId":"%s","livroId":"%s","nota":4,"flagSpoiler":false}
 								""".formatted(UUID.randomUUID(), UUID.randomUUID())))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.detail").isNotEmpty());
+				.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -91,12 +95,12 @@ class AvaliacaoControllerTests {
 								{"usuarioId":"%s","livroId":"%s","nota":4,"textoResenha":"%s","flagSpoiler":false}
 								""".formatted(UUID.randomUUID(), UUID.randomUUID(), textoLongo)))
 				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.detail").isNotEmpty());
+				.andExpect(jsonPath("$.detail").value("A resenha deve ter no máximo 5000 caracteres."));
 	}
 
 	@Test
 	void deveRetornarConflitoParaAvaliacaoDuplicada() throws Exception {
-		doThrow(new AvaliacaoDuplicadaException())
+		doThrow(new ConflitoException("Este usuário já avaliou este livro."))
 				.when(avaliacaoService).cadastrar(any(AvaliacaoCadastroRequest.class));
 
 		mockMvc.perform(post("/avaliacoes")
@@ -111,7 +115,7 @@ class AvaliacaoControllerTests {
 
 	@Test
 	void deveRetornarNotFoundParaUsuarioOuLivroInexistente() throws Exception {
-		doThrow(new RecursoAvaliacaoNaoEncontradoException("Livro"))
+		doThrow(new RecursoNaoEncontradoException("Livro não encontrado."))
 				.when(avaliacaoService).cadastrar(any(AvaliacaoCadastroRequest.class));
 
 		mockMvc.perform(post("/avaliacoes")
@@ -175,7 +179,7 @@ class AvaliacaoControllerTests {
 	@Test
 	void deveImpedirAtualizacaoPorOutroUsuario() throws Exception {
 		UUID id = UUID.randomUUID();
-		doThrow(new AcessoAvaliacaoNegadoException())
+		doThrow(new AcessoNegadoException("Somente o autor da avaliação pode alterá-la ou excluí-la."))
 				.when(avaliacaoService).atualizar(eq(id), any(AvaliacaoAtualizacaoRequest.class));
 
 		mockMvc.perform(put("/avaliacoes/{id}", id)
@@ -203,7 +207,7 @@ class AvaliacaoControllerTests {
 	void deveImpedirExclusaoPorOutroUsuario() throws Exception {
 		UUID id = UUID.randomUUID();
 		UUID usuarioId = UUID.randomUUID();
-		doThrow(new AcessoAvaliacaoNegadoException()).when(avaliacaoService).excluir(id, usuarioId);
+		doThrow(new AcessoNegadoException("Somente o autor da avaliação pode alterá-la ou excluí-la.")).when(avaliacaoService).excluir(id, usuarioId);
 
 		mockMvc.perform(delete("/avaliacoes/{id}", id).param("usuarioId", usuarioId.toString()))
 				.andExpect(status().isForbidden())
@@ -212,7 +216,7 @@ class AvaliacaoControllerTests {
 	}
 
 	private AvaliacaoResponse response(UUID id, UUID usuarioId, UUID livroId) {
-		return new AvaliacaoResponse(id, usuarioId, livroId, (short) 5, "Resenha", false,
-				LocalDateTime.now(), LocalDateTime.now());
+		return new AvaliacaoResponse(id, usuarioId, "Leitora", livroId, (short) 5, "Resenha", false,
+				LocalDateTime.now());
 	}
 }

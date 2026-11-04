@@ -2,7 +2,7 @@
 
 Cada avaliação pertence a um usuário e a um livro existentes. Um usuário pode
 avaliar cada livro uma única vez. A nota aceita valores de 1 a 5, a resenha é
-obrigatória e limitada a 5000 caracteres, e `flagSpoiler` informa se o texto
+opcional e limitada a 5000 caracteres, e `flagSpoiler` informa se o texto
 contém spoilers.
 
 ## Endpoints
@@ -17,15 +17,9 @@ contém spoilers.
 - `DELETE /avaliacoes/{id}?usuarioId={id}`: exclui uma avaliação após verificar
   se o ID informado corresponde ao autor.
 
-As respostas de erro usam Problem Details. Avaliações incluem as datas de
-criação e atualização.
-
-## Banco de dados
-
-Antes de iniciar a aplicação em um banco existente, aplique a migração
-`src/main/resources/db/migration/V1__adiciona_atualizado_em_avaliacoes.sql`,
-que adiciona `atualizado_em` à tabela `avaliacoes`. A aplicação não executa
-migrações automaticamente.
+As respostas de erro usam Problem Details, tratadas pelo `TratadorGlobalDeErros`
+(400 dados inválidos, 403 sem permissão, 404 não encontrado, 409 avaliação
+repetida). Cada avaliação traz o nome do autor e a data de criação.
 
 ## Autenticação
 

@@ -7,9 +7,9 @@ import org.example.bookverse.entity.Avaliacao;
 import org.example.bookverse.entity.Livro;
 import org.example.bookverse.entity.Usuario;
 import org.example.bookverse.entity.enums.TipoConta;
-import org.example.bookverse.exception.AcessoAvaliacaoNegadoException;
-import org.example.bookverse.exception.AvaliacaoDuplicadaException;
-import org.example.bookverse.exception.RecursoAvaliacaoNaoEncontradoException;
+import org.example.bookverse.exception.AcessoNegadoException;
+import org.example.bookverse.exception.ConflitoException;
+import org.example.bookverse.exception.RecursoNaoEncontradoException;
 import org.example.bookverse.repository.AvaliacaoRepository;
 import org.example.bookverse.repository.LivroRepository;
 import org.example.bookverse.repository.UsuarioRepository;
@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -70,6 +71,23 @@ class AvaliacaoServiceTests {
 		assertEquals("Excelente!", response.textoResenha());
 		assertEquals((short) 5, response.nota());
 		assertEquals(true, response.flagSpoiler());
+		assertEquals("Leitora", response.nomeUsuario());
+	}
+
+	@Test
+	void deveGravarResenhaEmBrancoComoVazia() {
+		UUID usuarioId = UUID.randomUUID();
+		UUID livroId = UUID.randomUUID();
+		when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario(usuarioId)));
+		when(livroRepository.findById(livroId)).thenReturn(Optional.of(livro(livroId)));
+		when(avaliacaoRepository.existsByUsuarioIdAndLivroId(usuarioId, livroId)).thenReturn(false);
+		when(avaliacaoRepository.saveAndFlush(any(Avaliacao.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+
+		AvaliacaoResponse response = avaliacaoService.cadastrar(
+				new AvaliacaoCadastroRequest(usuarioId, livroId, (short) 4, "   ", false));
+
+		assertNull(response.textoResenha());
 	}
 
 	@Test
@@ -77,7 +95,7 @@ class AvaliacaoServiceTests {
 		UUID usuarioId = UUID.randomUUID();
 		when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
-		assertThrows(RecursoAvaliacaoNaoEncontradoException.class,
+		assertThrows(RecursoNaoEncontradoException.class,
 				() -> avaliacaoService.cadastrar(cadastro(usuarioId, UUID.randomUUID())));
 		verify(livroRepository, never()).findById(any());
 	}
@@ -90,7 +108,7 @@ class AvaliacaoServiceTests {
 		when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
 		when(livroRepository.findById(livroId)).thenReturn(Optional.empty());
 
-		assertThrows(RecursoAvaliacaoNaoEncontradoException.class,
+		assertThrows(RecursoNaoEncontradoException.class,
 				() -> avaliacaoService.cadastrar(cadastro(usuarioId, livroId)));
 		verify(avaliacaoRepository, never()).saveAndFlush(any());
 	}
@@ -105,7 +123,7 @@ class AvaliacaoServiceTests {
 		when(livroRepository.findById(livroId)).thenReturn(Optional.of(livro));
 		when(avaliacaoRepository.existsByUsuarioIdAndLivroId(usuarioId, livroId)).thenReturn(true);
 
-		assertThrows(AvaliacaoDuplicadaException.class,
+		assertThrows(ConflitoException.class,
 				() -> avaliacaoService.cadastrar(cadastro(usuarioId, livroId)));
 		verify(avaliacaoRepository, never()).saveAndFlush(any());
 	}
@@ -123,7 +141,7 @@ class AvaliacaoServiceTests {
 		when(avaliacaoRepository.saveAndFlush(any(Avaliacao.class)))
 				.thenThrow(new DataIntegrityViolationException("violação única", causa));
 
-		assertThrows(AvaliacaoDuplicadaException.class,
+		assertThrows(ConflitoException.class,
 				() -> avaliacaoService.cadastrar(cadastro(usuarioId, livroId)));
 	}
 
@@ -142,7 +160,7 @@ class AvaliacaoServiceTests {
 		UUID livroId = UUID.randomUUID();
 		when(livroRepository.existsById(livroId)).thenReturn(false);
 
-		assertThrows(RecursoAvaliacaoNaoEncontradoException.class,
+		assertThrows(RecursoNaoEncontradoException.class,
 				() -> avaliacaoService.listarPorLivro(livroId));
 	}
 
@@ -170,7 +188,7 @@ class AvaliacaoServiceTests {
 		UUID avaliacaoId = UUID.randomUUID();
 		when(avaliacaoRepository.findById(avaliacaoId)).thenReturn(Optional.empty());
 
-		assertThrows(RecursoAvaliacaoNaoEncontradoException.class,
+		assertThrows(RecursoNaoEncontradoException.class,
 				() -> avaliacaoService.buscarPorId(avaliacaoId));
 	}
 
@@ -197,7 +215,7 @@ class AvaliacaoServiceTests {
 		when(avaliacaoRepository.findById(avaliacaoId))
 				.thenReturn(Optional.of(avaliacao));
 
-		assertThrows(AcessoAvaliacaoNegadoException.class,
+		assertThrows(AcessoNegadoException.class,
 				() -> avaliacaoService.atualizar(avaliacaoId,
 						new AvaliacaoAtualizacaoRequest(UUID.randomUUID(), (short) 4, "Alteração", false)));
 		verify(avaliacaoRepository, never()).saveAndFlush(any());
@@ -222,7 +240,7 @@ class AvaliacaoServiceTests {
 		when(avaliacaoRepository.findById(avaliacaoId))
 				.thenReturn(Optional.of(avaliacao));
 
-		assertThrows(AcessoAvaliacaoNegadoException.class,
+		assertThrows(AcessoNegadoException.class,
 				() -> avaliacaoService.excluir(avaliacaoId, UUID.randomUUID()));
 		verify(avaliacaoRepository, never()).delete(any(Avaliacao.class));
 	}
@@ -252,7 +270,6 @@ class AvaliacaoServiceTests {
 		Avaliacao avaliacao = new Avaliacao(usuario(usuarioId), livro(UUID.randomUUID()), (short) 5);
 		ReflectionTestUtils.setField(avaliacao, "id", avaliacaoId);
 		ReflectionTestUtils.setField(avaliacao, "criadoEm", LocalDateTime.now());
-		ReflectionTestUtils.setField(avaliacao, "atualizadoEm", LocalDateTime.now());
 		avaliacao.setTextoResenha("Resenha existente");
 		return avaliacao;
 	}
