@@ -2,6 +2,7 @@ package org.example.bookverse.catalogo;
 
 import org.example.bookverse.entity.Livro;
 import org.example.bookverse.repository.LivroRepository;
+import org.example.bookverse.service.LivroService;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 
@@ -54,12 +55,9 @@ public class LivroImportador {
 		return livroRepository.findAll(Example.of(exemplo, matcher)).stream().findFirst();
 	}
 
-	/** Remove hífens e espaços: "978-85-359-1484-9" e "9788535914849" são o mesmo livro. */
+	/** Mesma regra do cadastro pela API: "978-85-359-1484-9" e "9788535914849" são o mesmo livro. */
 	static String normalizarIsbn(String isbn) {
-		if (isBlank(isbn)) {
-			return null;
-		}
-		return isbn.replaceAll("[^0-9Xx]", "").toUpperCase();
+		return LivroService.normalizarIsbn(isbn);
 	}
 
 	private static boolean isBlank(String valor) {
