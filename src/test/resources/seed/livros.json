@@ -1,0 +1,542 @@
+[
+  {
+    "titulo": "Dom Casmurro",
+    "autor": "Machado de Assis",
+    "isbn": "9788500507007",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788500507007-L.jpg",
+    "sinopse": "Bentinho relembra sua vida e o amor por Capitu, consumido pela dúvida sobre uma possível traição.",
+    "genero": "Romance",
+    "anoPublicacao": 1900,
+    "numPaginas": 268
+  },
+  {
+    "titulo": "Memórias Póstumas de Brás Cubas",
+    "autor": "Machado de Assis",
+    "isbn": "9788506004234",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788506004234-L.jpg",
+    "sinopse": "Um defunto autor narra, com ironia, a própria vida e as vaidades da sociedade carioca do século XIX.",
+    "genero": "Romance",
+    "anoPublicacao": 1881,
+    "numPaginas": 242
+  },
+  {
+    "titulo": "Vidas Secas",
+    "autor": "Graciliano Ramos",
+    "isbn": "9788501085290",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788501085290-L.jpg",
+    "sinopse": "A família de Fabiano atravessa o sertão nordestino fugindo da seca e da miséria.",
+    "genero": "Romance",
+    "anoPublicacao": 1964,
+    "numPaginas": 155
+  },
+  {
+    "titulo": "O Cortiço",
+    "autor": "Aluísio Azevedo",
+    "isbn": null,
+    "capaUrl": null,
+    "sinopse": "A vida coletiva de um cortiço no Rio de Janeiro revela a exploração e os instintos humanos.",
+    "genero": "Romance",
+    "anoPublicacao": 1890,
+    "numPaginas": null
+  },
+  {
+    "titulo": "Capitães da Areia",
+    "autor": "Jorge Amado",
+    "isbn": "9788510053068",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788510053068-L.jpg",
+    "sinopse": "Um grupo de meninos abandonados sobrevive nas ruas de Salvador entre aventuras e pequenos crimes.",
+    "genero": "Romance",
+    "anoPublicacao": 1937,
+    "numPaginas": 283
+  },
+  {
+    "titulo": "A Hora da Estrela",
+    "autor": "Clarice Lispector",
+    "isbn": "9788526502093",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788526502093-L.jpg",
+    "sinopse": "A história de Macabéa, uma jovem nordestina invisível na cidade grande do Rio de Janeiro.",
+    "genero": "Romance",
+    "anoPublicacao": 1977,
+    "numPaginas": 96
+  },
+  {
+    "titulo": "Grande Sertão: Veredas",
+    "autor": "João Guimarães Rosa",
+    "isbn": null,
+    "capaUrl": null,
+    "sinopse": "O ex-jagunço Riobaldo conta sua travessia pelo sertão, suas batalhas e seu amor por Diadorim.",
+    "genero": "Romance",
+    "anoPublicacao": 1956,
+    "numPaginas": null
+  },
+  {
+    "titulo": "O Alquimista",
+    "autor": "Paulo Coelho",
+    "isbn": "9788532503251",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788532503251-L.jpg",
+    "sinopse": "O pastor Santiago parte em busca de um tesouro e descobre o sentido de sua lenda pessoal.",
+    "genero": "Ficção",
+    "anoPublicacao": 1988,
+    "numPaginas": 197
+  },
+  {
+    "titulo": "Iracema",
+    "autor": "José de Alencar",
+    "isbn": "9788582850336",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788582850336-L.jpg",
+    "sinopse": "O amor entre a índia Iracema e o português Martim simboliza o nascimento do povo cearense.",
+    "genero": "Romance",
+    "anoPublicacao": 1886,
+    "numPaginas": 180
+  },
+  {
+    "titulo": "Macunaíma",
+    "autor": "Mário de Andrade",
+    "isbn": "9788570280077",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788570280077-L.jpg",
+    "sinopse": "As aventuras do herói sem nenhum caráter em uma rapsódia sobre a identidade brasileira.",
+    "genero": "Romance",
+    "anoPublicacao": 1928,
+    "numPaginas": 222
+  },
+  {
+    "titulo": "1984",
+    "autor": "George Orwell",
+    "isbn": "9788582851197",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788582851197-L.jpg",
+    "sinopse": "Winston Smith vive sob a vigilância constante do Grande Irmão em um Estado totalitário.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1949,
+    "numPaginas": 318
+  },
+  {
+    "titulo": "A Revolução dos Bichos",
+    "autor": "George Orwell",
+    "isbn": "9788525033468",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788525033468-L.jpg",
+    "sinopse": "Os animais de uma fazenda se rebelam contra os humanos, mas o poder logo corrompe os líderes.",
+    "genero": "Ficção",
+    "anoPublicacao": 1945,
+    "numPaginas": 128
+  },
+  {
+    "titulo": "Admirável Mundo Novo",
+    "autor": "Aldous Huxley",
+    "isbn": "9781537207445",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9781537207445-L.jpg",
+    "sinopse": "Uma sociedade futura controla as pessoas pelo prazer, pelo consumo e pela engenharia genética.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1932,
+    "numPaginas": 241
+  },
+  {
+    "titulo": "Fahrenheit 451",
+    "autor": "Ray Bradbury",
+    "isbn": "9788525052247",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788525052247-L.jpg",
+    "sinopse": "Em um futuro onde livros são proibidos, o bombeiro Montag tem a função de queimá-los.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1953,
+    "numPaginas": 190
+  },
+  {
+    "titulo": "O Hobbit",
+    "autor": "J.R.R. Tolkien",
+    "isbn": "9788595086081",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788595086081-L.jpg",
+    "sinopse": "Bilbo Bolseiro é arrastado para uma jornada para recuperar o tesouro guardado pelo dragão Smaug.",
+    "genero": "Fantasia",
+    "anoPublicacao": 1937,
+    "numPaginas": 310
+  },
+  {
+    "titulo": "O Senhor dos Anéis: A Sociedade do Anel",
+    "autor": "J.R.R. Tolkien",
+    "isbn": "9788595084759",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788595084759-L.jpg",
+    "sinopse": "Frodo recebe a missão de destruir o Um Anel antes que Sauron o recupere.",
+    "genero": "Fantasia",
+    "anoPublicacao": 1954,
+    "numPaginas": 492
+  },
+  {
+    "titulo": "Harry Potter e a Pedra Filosofal",
+    "autor": "J.K. Rowling",
+    "isbn": "9788532530271",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788532530271-L.jpg",
+    "sinopse": "Harry descobre que é bruxo e começa seus estudos na Escola de Magia e Bruxaria de Hogwarts.",
+    "genero": "Fantasia",
+    "anoPublicacao": 1997,
+    "numPaginas": 302
+  },
+  {
+    "titulo": "Duna",
+    "autor": "Frank Herbert",
+    "isbn": "9788576571018",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788576571018-L.jpg",
+    "sinopse": "Paul Atreides é levado ao planeta desértico Arrakis, centro de uma disputa pela especiaria mais valiosa do universo.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1965,
+    "numPaginas": 608
+  },
+  {
+    "titulo": "O Pequeno Príncipe",
+    "autor": "Antoine de Saint-Exupéry",
+    "isbn": "9788522031450",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788522031450-L.jpg",
+    "sinopse": "Um aviador perdido no deserto conhece um pequeno príncipe vindo de outro planeta.",
+    "genero": "Infantil",
+    "anoPublicacao": 1943,
+    "numPaginas": 96
+  },
+  {
+    "titulo": "Orgulho e Preconceito",
+    "autor": "Jane Austen",
+    "isbn": "9788563560155",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788563560155-L.jpg",
+    "sinopse": "Elizabeth Bennet e o Sr. Darcy superam o orgulho e os preconceitos da sociedade inglesa.",
+    "genero": "Romance",
+    "anoPublicacao": 1813,
+    "numPaginas": 351
+  },
+  {
+    "titulo": "Cem Anos de Solidão",
+    "autor": "Gabriel García Márquez",
+    "isbn": "9788501110367",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788501110367-L.jpg",
+    "sinopse": "A saga de sete gerações da família Buendía na cidade fictícia de Macondo.",
+    "genero": "Romance",
+    "anoPublicacao": 1967,
+    "numPaginas": 432
+  },
+  {
+    "titulo": "Crime e Castigo",
+    "autor": "Fiódor Dostoiévski",
+    "isbn": "9781435131828",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9781435131828-L.jpg",
+    "sinopse": "O estudante Raskólnikov comete um assassinato e passa a ser atormentado pela culpa.",
+    "genero": "Romance",
+    "anoPublicacao": 1866,
+    "numPaginas": 551
+  },
+  {
+    "titulo": "Dom Quixote",
+    "autor": "Miguel de Cervantes",
+    "isbn": "9783538068926",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9783538068926-L.jpg",
+    "sinopse": "Um fidalgo que leu romances de cavalaria demais sai pelo mundo como cavaleiro andante.",
+    "genero": "Romance",
+    "anoPublicacao": 1605,
+    "numPaginas": 519
+  },
+  {
+    "titulo": "O Diário de Anne Frank",
+    "autor": "Anne Frank",
+    "isbn": "9788577990009",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788577990009-L.jpg",
+    "sinopse": "O diário de uma adolescente judia escondida com a família durante a ocupação nazista em Amsterdã.",
+    "genero": "Biografia",
+    "anoPublicacao": 1947,
+    "numPaginas": 285
+  },
+  {
+    "titulo": "Sapiens: Uma Breve História da Humanidade",
+    "autor": "Yuval Noah Harari",
+    "isbn": "9788535933925",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788535933925-L.jpg",
+    "sinopse": "Uma visão da história da humanidade, da Idade da Pedra às revoluções do século XXI.",
+    "genero": "História",
+    "anoPublicacao": 2011,
+    "numPaginas": 456
+  },
+  {
+    "titulo": "O Código Da Vinci",
+    "autor": "Dan Brown",
+    "isbn": "9788580416251",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580416251-L.jpg",
+    "sinopse": "Robert Langdon investiga um assassinato no Louvre e descobre um segredo guardado por séculos.",
+    "genero": "Suspense",
+    "anoPublicacao": 2003,
+    "numPaginas": 489
+  },
+  {
+    "titulo": "Assassinato no Expresso do Oriente",
+    "autor": "Agatha Christie",
+    "isbn": "9788595086784",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788595086784-L.jpg",
+    "sinopse": "Hercule Poirot investiga um assassinato a bordo de um trem preso pela neve.",
+    "genero": "Mistério",
+    "anoPublicacao": 1933,
+    "numPaginas": 240
+  },
+  {
+    "titulo": "O Iluminado",
+    "autor": "Stephen King",
+    "isbn": "9788581050485",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788581050485-L.jpg",
+    "sinopse": "Jack Torrance aceita cuidar de um hotel isolado durante o inverno, e forças sombrias tomam conta dele.",
+    "genero": "Terror",
+    "anoPublicacao": 1977,
+    "numPaginas": 506
+  },
+  {
+    "titulo": "A Menina que Roubava Livros",
+    "autor": "Markus Zusak",
+    "isbn": "9788580574517",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580574517-L.jpg",
+    "sinopse": "Na Alemanha nazista, Liesel encontra nos livros um refúgio, narrada pela própria Morte.",
+    "genero": "Romance",
+    "anoPublicacao": 2005,
+    "numPaginas": 556
+  },
+  {
+    "titulo": "O Nome do Vento",
+    "autor": "Patrick Rothfuss",
+    "isbn": "9788580410631",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580410631-L.jpg",
+    "sinopse": "Kvothe narra sua trajetória de órfão a lendário arcanista e músico.",
+    "genero": "Fantasia",
+    "anoPublicacao": 2007,
+    "numPaginas": 736
+  },
+  {
+    "titulo": "Quincas Borba",
+    "autor": "Machado de Assis",
+    "isbn": "9788563560520",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788563560520-L.jpg",
+    "sinopse": "O ingênuo Rubião herda a fortuna do filósofo Quincas Borba e se perde na sociedade do Rio de Janeiro.",
+    "genero": "Romance",
+    "anoPublicacao": 1891,
+    "numPaginas": 270
+  },
+  {
+    "titulo": "Senhora",
+    "autor": "José de Alencar",
+    "isbn": "9788580865912",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580865912-L.jpg",
+    "sinopse": "Aurélia, que fica rica de repente, 'compra' como marido o homem que a abandonou por dinheiro.",
+    "genero": "Romance",
+    "anoPublicacao": 1875,
+    "numPaginas": 251
+  },
+  {
+    "titulo": "Gabriela, Cravo e Canela",
+    "autor": "Jorge Amado",
+    "isbn": "9788501005366",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788501005366-L.jpg",
+    "sinopse": "Em Ilhéus, na época do cacau, a retirante Gabriela muda a vida do árabe Nacib e da cidade.",
+    "genero": "Romance",
+    "anoPublicacao": 1958,
+    "numPaginas": 425
+  },
+  {
+    "titulo": "O Quinze",
+    "autor": "Rachel de Queiroz",
+    "isbn": "9788503008051",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788503008051-L.jpg",
+    "sinopse": "A grande seca de 1915 no Ceará vista pela família de Chico Bento e pela professora Conceição.",
+    "genero": "Romance",
+    "anoPublicacao": 1930,
+    "numPaginas": 139
+  },
+  {
+    "titulo": "Torto Arado",
+    "autor": "Itamar Vieira Junior",
+    "isbn": "9781839766428",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9781839766428-L.jpg",
+    "sinopse": "As irmãs Bibiana e Belonísia crescem em uma fazenda do sertão baiano marcada pela herança da escravidão.",
+    "genero": "Romance",
+    "anoPublicacao": 2019,
+    "numPaginas": 280
+  },
+  {
+    "titulo": "Quarto de Despejo",
+    "autor": "Carolina Maria de Jesus",
+    "isbn": "9788508105311",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788508105311-L.jpg",
+    "sinopse": "O diário de uma catadora de papel que retrata o dia a dia da favela do Canindé, em São Paulo.",
+    "genero": "Biografia",
+    "anoPublicacao": 1960,
+    "numPaginas": 182
+  },
+  {
+    "titulo": "Auto da Compadecida",
+    "autor": "Ariano Suassuna",
+    "isbn": "9788520938393",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788520938393-L.jpg",
+    "sinopse": "As trapaças de João Grilo e Chicó no sertão terminam em um julgamento com a Compadecida.",
+    "genero": "Teatro",
+    "anoPublicacao": 1957,
+    "numPaginas": 203
+  },
+  {
+    "titulo": "Ensaio sobre a Cegueira",
+    "autor": "José Saramago",
+    "isbn": "9788571644953",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788571644953-L.jpg",
+    "sinopse": "Uma epidemia de cegueira branca se espalha por uma cidade e expõe o melhor e o pior das pessoas.",
+    "genero": "Romance",
+    "anoPublicacao": 1995,
+    "numPaginas": 352
+  },
+  {
+    "titulo": "O Morro dos Ventos Uivantes",
+    "autor": "Emily Brontë",
+    "isbn": "9788535104943",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788535104943-L.jpg",
+    "sinopse": "A paixão destrutiva entre Heathcliff e Catherine atravessa duas gerações nas charnecas inglesas.",
+    "genero": "Romance",
+    "anoPublicacao": 1847,
+    "numPaginas": 318
+  },
+  {
+    "titulo": "O Grande Gatsby",
+    "autor": "F. Scott Fitzgerald",
+    "isbn": "9788581301730",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788581301730-L.jpg",
+    "sinopse": "O misterioso milionário Jay Gatsby dá festas luxuosas na esperança de reconquistar Daisy.",
+    "genero": "Romance",
+    "anoPublicacao": 1925,
+    "numPaginas": 185
+  },
+  {
+    "titulo": "O Apanhador no Campo de Centeio",
+    "autor": "J.D. Salinger",
+    "isbn": "9788587575012",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788587575012-L.jpg",
+    "sinopse": "Expulso do colégio, o adolescente Holden Caulfield vaga por Nova York durante três dias.",
+    "genero": "Romance",
+    "anoPublicacao": 1951,
+    "numPaginas": 240
+  },
+  {
+    "titulo": "A Metamorfose",
+    "autor": "Franz Kafka",
+    "isbn": null,
+    "capaUrl": null,
+    "sinopse": "Gregor Samsa acorda transformado em um inseto monstruoso e se torna um fardo para a família.",
+    "genero": "Ficção",
+    "anoPublicacao": 1915,
+    "numPaginas": 73
+  },
+  {
+    "titulo": "O Guia do Mochileiro das Galáxias",
+    "autor": "Douglas Adams",
+    "isbn": "9788599296578",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788599296578-L.jpg",
+    "sinopse": "Arthur Dent escapa da destruição da Terra pegando carona em uma nave alienígena.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1979,
+    "numPaginas": 216
+  },
+  {
+    "titulo": "Fundação",
+    "autor": "Isaac Asimov",
+    "isbn": "9788576574835",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788576574835-L.jpg",
+    "sinopse": "O matemático Hari Seldon prevê a queda do Império Galáctico e cria um plano para encurtar a idade das trevas.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1951,
+    "numPaginas": 240
+  },
+  {
+    "titulo": "Neuromancer",
+    "autor": "William Gibson",
+    "isbn": "9788576571919",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788576571919-L.jpg",
+    "sinopse": "Um hacker decadente é contratado para um último golpe no ciberespaço.",
+    "genero": "Ficção Científica",
+    "anoPublicacao": 1984,
+    "numPaginas": 317
+  },
+  {
+    "titulo": "O Leão, a Feiticeira e o Guarda-Roupa",
+    "autor": "C.S. Lewis",
+    "isbn": "9780060765446",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9780060765446-L.jpg",
+    "sinopse": "Quatro irmãos atravessam um guarda-roupa e chegam a Nárnia, dominada pelo inverno da Feiticeira Branca.",
+    "genero": "Fantasia",
+    "anoPublicacao": 1950,
+    "numPaginas": 186
+  },
+  {
+    "titulo": "A Guerra dos Tronos",
+    "autor": "George R.R. Martin",
+    "isbn": "9788580442786",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580442786-L.jpg",
+    "sinopse": "Famílias nobres de Westeros disputam o Trono de Ferro enquanto uma ameaça antiga desperta no norte.",
+    "genero": "Fantasia",
+    "anoPublicacao": 1996,
+    "numPaginas": 801
+  },
+  {
+    "titulo": "Drácula",
+    "autor": "Bram Stoker",
+    "isbn": "9788502132535",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788502132535-L.jpg",
+    "sinopse": "O conde Drácula deixa a Transilvânia rumo à Inglaterra, perseguido por Van Helsing e seus aliados.",
+    "genero": "Terror",
+    "anoPublicacao": 1897,
+    "numPaginas": 384
+  },
+  {
+    "titulo": "Frankenstein",
+    "autor": "Mary Shelley",
+    "isbn": "9788594540188",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788594540188-L.jpg",
+    "sinopse": "Victor Frankenstein dá vida a uma criatura e passa a ser perseguido pelas consequências de sua criação.",
+    "genero": "Terror",
+    "anoPublicacao": 1818,
+    "numPaginas": 240
+  },
+  {
+    "titulo": "O Retrato de Dorian Gray",
+    "autor": "Oscar Wilde",
+    "isbn": "9788580700183",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580700183-L.jpg",
+    "sinopse": "Dorian Gray permanece jovem enquanto seu retrato envelhece e registra cada um de seus pecados.",
+    "genero": "Ficção",
+    "anoPublicacao": 1890,
+    "numPaginas": 246
+  },
+  {
+    "titulo": "O Silêncio dos Inocentes",
+    "autor": "Thomas Harris",
+    "isbn": "9780099532927",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9780099532927-L.jpg",
+    "sinopse": "A agente Clarice Starling pede ajuda ao psiquiatra canibal Hannibal Lecter para capturar um assassino.",
+    "genero": "Suspense",
+    "anoPublicacao": 1988,
+    "numPaginas": 352
+  },
+  {
+    "titulo": "Coraline",
+    "autor": "Neil Gaiman",
+    "isbn": "9788551006757",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788551006757-L.jpg",
+    "sinopse": "Coraline encontra uma porta para um mundo paralelo onde uma 'Outra Mãe' quer que ela fique para sempre.",
+    "genero": "Fantasia",
+    "anoPublicacao": 2001,
+    "numPaginas": 176
+  },
+  {
+    "titulo": "Hábitos Atômicos",
+    "autor": "James Clear",
+    "isbn": "9788550807560",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788550807560-L.jpg",
+    "sinopse": "Um método prático para criar bons hábitos e abandonar os ruins com pequenas mudanças diárias.",
+    "genero": "Autoajuda",
+    "anoPublicacao": 2018,
+    "numPaginas": 322
+  },
+  {
+    "titulo": "Uma Breve História do Tempo",
+    "autor": "Stephen Hawking",
+    "isbn": "9788580576467",
+    "capaUrl": "https://covers.openlibrary.org/b/isbn/9788580576467-L.jpg",
+    "sinopse": "Uma introdução à cosmologia, do Big Bang aos buracos negros, para leitores sem formação científica.",
+    "genero": "Ciência",
+    "anoPublicacao": 1988,
+    "numPaginas": 241
+  }
+]
