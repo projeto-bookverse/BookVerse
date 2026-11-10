@@ -11,8 +11,36 @@ Content-Type: application/json
   "bio": "Gosto de romances e ficção."
 }
 
-### Cadastrar um livro
+### Entrar (o token e o ID ficam guardados para as próximas requisições)
+POST http://localhost:8080/autenticacao/login
+Content-Type: application/json
+
+{
+  "email": "leitora.teste@example.com",
+  "senha": "senha-de-teste-segura"
+}
+
+> {%
+    client.global.set("token", response.body.token);
+%}
+
+### Consultar um perfil (troque pelo ID devolvido no cadastro)
+GET http://localhost:8080/usuarios/COLE-O-ID-DO-USUARIO
+Authorization: Bearer {{token}}
+
+### Editar o próprio perfil
+PUT http://localhost:8080/usuarios/COLE-O-ID-DO-USUARIO
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nome": "Leitora Renomeada",
+  "bio": "Amo clássicos brasileiros."
+}
+
+### Cadastrar um livro (exige token de uma conta ADMIN)
 POST http://localhost:8080/livros
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -22,4 +50,31 @@ Content-Type: application/json
   "isbn": "978-85-01-08529-0",
   "anoPublicacao": 1938,
   "numPaginas": 176
+}
+
+### Editar um livro (exige token de uma conta ADMIN; troque pelo ID do livro)
+PUT http://localhost:8080/livros/COLE-O-ID-DO-LIVRO
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "titulo": "Vidas Secas",
+  "autor": "Graciliano Ramos",
+  "genero": "Romance",
+  "isbn": "978-85-01-08529-0",
+  "anoPublicacao": 1938,
+  "numPaginas": 176,
+  "sinopse": "A saga de uma família de retirantes no sertão nordestino."
+}
+
+### Avaliar um livro (troque pelo ID de um livro cadastrado)
+POST http://localhost:8080/avaliacoes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "livroId": "COLE-O-ID-DO-LIVRO",
+  "nota": 5,
+  "textoResenha": "Um clássico!",
+  "flagSpoiler": false
 }

@@ -64,7 +64,7 @@ class AvaliacaoServiceTests {
 				.thenAnswer(invocation -> invocation.getArgument(0));
 
 		AvaliacaoResponse response = avaliacaoService.cadastrar(
-				new AvaliacaoCadastroRequest(usuarioId, livroId, (short) 5, "  Excelente!  ", true));
+				new AvaliacaoCadastroRequest(livroId, (short) 5, "  Excelente!  ", true), usuarioId);
 
 		assertEquals(usuarioId, response.usuarioId());
 		assertEquals(livroId, response.livroId());
@@ -85,7 +85,7 @@ class AvaliacaoServiceTests {
 				.thenAnswer(invocation -> invocation.getArgument(0));
 
 		AvaliacaoResponse response = avaliacaoService.cadastrar(
-				new AvaliacaoCadastroRequest(usuarioId, livroId, (short) 4, "   ", false));
+				new AvaliacaoCadastroRequest(livroId, (short) 4, "   ", false), usuarioId);
 
 		assertNull(response.textoResenha());
 	}
@@ -96,7 +96,7 @@ class AvaliacaoServiceTests {
 		when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.empty());
 
 		assertThrows(RecursoNaoEncontradoException.class,
-				() -> avaliacaoService.cadastrar(cadastro(usuarioId, UUID.randomUUID())));
+				() -> avaliacaoService.cadastrar(cadastro(UUID.randomUUID()), usuarioId));
 		verify(livroRepository, never()).findById(any());
 	}
 
@@ -109,7 +109,7 @@ class AvaliacaoServiceTests {
 		when(livroRepository.findById(livroId)).thenReturn(Optional.empty());
 
 		assertThrows(RecursoNaoEncontradoException.class,
-				() -> avaliacaoService.cadastrar(cadastro(usuarioId, livroId)));
+				() -> avaliacaoService.cadastrar(cadastro(livroId), usuarioId));
 		verify(avaliacaoRepository, never()).saveAndFlush(any());
 	}
 
@@ -124,7 +124,7 @@ class AvaliacaoServiceTests {
 		when(avaliacaoRepository.existsByUsuarioIdAndLivroId(usuarioId, livroId)).thenReturn(true);
 
 		assertThrows(ConflitoException.class,
-				() -> avaliacaoService.cadastrar(cadastro(usuarioId, livroId)));
+				() -> avaliacaoService.cadastrar(cadastro(livroId), usuarioId));
 		verify(avaliacaoRepository, never()).saveAndFlush(any());
 	}
 
@@ -142,7 +142,7 @@ class AvaliacaoServiceTests {
 				.thenThrow(new DataIntegrityViolationException("violação única", causa));
 
 		assertThrows(ConflitoException.class,
-				() -> avaliacaoService.cadastrar(cadastro(usuarioId, livroId)));
+				() -> avaliacaoService.cadastrar(cadastro(livroId), usuarioId));
 	}
 
 	@Test
@@ -201,7 +201,7 @@ class AvaliacaoServiceTests {
 		when(avaliacaoRepository.saveAndFlush(avaliacao)).thenReturn(avaliacao);
 
 		AvaliacaoResponse response = avaliacaoService.atualizar(avaliacaoId,
-				new AvaliacaoAtualizacaoRequest(usuarioId, (short) 4, "Nova resenha", false));
+				new AvaliacaoAtualizacaoRequest((short) 4, "Nova resenha", false), usuarioId);
 
 		assertEquals((short) 4, response.nota());
 		assertEquals("Nova resenha", response.textoResenha());
@@ -217,7 +217,7 @@ class AvaliacaoServiceTests {
 
 		assertThrows(AcessoNegadoException.class,
 				() -> avaliacaoService.atualizar(avaliacaoId,
-						new AvaliacaoAtualizacaoRequest(UUID.randomUUID(), (short) 4, "Alteração", false)));
+						new AvaliacaoAtualizacaoRequest((short) 4, "Alteração", false), UUID.randomUUID()));
 		verify(avaliacaoRepository, never()).saveAndFlush(any());
 	}
 
@@ -245,8 +245,8 @@ class AvaliacaoServiceTests {
 		verify(avaliacaoRepository, never()).delete(any(Avaliacao.class));
 	}
 
-	private AvaliacaoCadastroRequest cadastro(UUID usuarioId, UUID livroId) {
-		return new AvaliacaoCadastroRequest(usuarioId, livroId, (short) 5, "Muito bom", false);
+	private AvaliacaoCadastroRequest cadastro(UUID livroId) {
+		return new AvaliacaoCadastroRequest(livroId, (short) 5, "Muito bom", false);
 	}
 
 	private Usuario usuario(UUID id) {

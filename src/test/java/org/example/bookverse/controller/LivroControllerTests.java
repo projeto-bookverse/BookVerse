@@ -1,29 +1,39 @@
 package org.example.bookverse.controller;
 
+import org.example.bookverse.config.JwtService;
 import org.example.bookverse.entity.Livro;
+import org.example.bookverse.entity.Usuario;
+import org.example.bookverse.entity.enums.TipoConta;
 import org.example.bookverse.repository.LivroRepository;
+import org.example.bookverse.repository.UsuarioRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Testa o cadastro de livros de ponta a ponta (HTTP → Service → PostgreSQL local).
+ * Testa o cadastro e a edição de livros de ponta a ponta (HTTP com token → Service → PostgreSQL local).
+ * Só administradores cadastram livros, então as requisições usam o token de um admin.
  * Cada teste roda em uma transação desfeita ao final, então nada fica salvo no banco.
  */
 @SpringBootTest
@@ -36,6 +46,40 @@ class LivroControllerTests {
 
 	@MockitoSpyBean
 	private LivroRepository livroRepository;
+
+	@Autowired
+	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	private JwtService jwtService;
+
+	private String tokenDeAdmin;
+
+	private String tokenDeLeitor;
+
+	@BeforeEach
+	void configurar() {
+		tokenDeAdmin = tokenDe(novoUsuario(TipoConta.ADMIN));
+		tokenDeLeitor = tokenDe(novoUsuario(TipoConta.LEITOR));
+	}
+
+	@Test
+	void naoDeveCadastrarSemEstarLogado() throws Exception {
+		mockMvc.perform(post("/livros")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json("Vidas Secas", "Graciliano Ramos", "Romance", null)))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void naoDevePermitirQueLeitorCadastreLivro() throws Exception {
+		mockMvc.perform(post("/livros")
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json("Vidas Secas", "Graciliano Ramos", "Romance", null)))
+				.andExpect(status().isForbidden())
+				.andExpect(jsonPath("$.detail").value("Você não tem permissão para realizar esta ação."));
+	}
 
 	@Test
 	void deveCadastrarLivro() throws Exception {
@@ -144,8 +188,83 @@ class LivroControllerTests {
 				.andExpect(jsonPath("$.detail").value("O número de páginas deve ser positivo."));
 	}
 
+	@Test
+	void deveAtualizarLivro() throws Exception {
+		Livro livro = livroRepository.saveAndFlush(new Livro("Titulo Antigo", "Autor Antigo", "Romance"));
+		String isbn = isbnDeTeste();
+
+		atualizar(livro.getId(), tokenDeAdmin, """
+				{"titulo": "  Vidas Secas  ", "autor": "Graciliano Ramos", "genero": "Romance",
+				 "isbn": "%s", "numPaginas": 176}
+				""".formatted(isbn))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(livro.getId().toString()))
+				.andExpect(jsonPath("$.titulo").value("Vidas Secas"))
+				.andExpect(jsonPath("$.autor").value("Graciliano Ramos"))
+				.andExpect(jsonPath("$.isbn").value(isbn))
+				.andExpect(jsonPath("$.numPaginas").value(176));
+	}
+
+	@Test
+	void deveAtualizarMantendoOProprioIsbn() throws Exception {
+		String isbn = isbnDeTeste();
+		Livro livro = new Livro("Vidas Secas", "Graciliano Ramos", "Romance");
+		livro.setIsbn(isbn);
+		livro = livroRepository.saveAndFlush(livro);
+
+		atualizar(livro.getId(), tokenDeAdmin, json("Vidas Secas (edição revista)", "Graciliano Ramos", "Romance", isbn))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.titulo").value("Vidas Secas (edição revista)"));
+	}
+
+	@Test
+	void naoDeveAtualizarComIsbnDeOutroLivro() throws Exception {
+		String isbn = isbnDeTeste();
+		Livro outro = new Livro("Outro", "Autor", "Romance");
+		outro.setIsbn(isbn);
+		livroRepository.saveAndFlush(outro);
+		Livro livro = livroRepository.saveAndFlush(new Livro("Vidas Secas", "Graciliano Ramos", "Romance"));
+
+		atualizar(livro.getId(), tokenDeAdmin, json("Vidas Secas", "Graciliano Ramos", "Romance", isbn))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.detail").value("Já existe um livro cadastrado com o ISBN: " + isbn));
+	}
+
+	@Test
+	void naoDeveAtualizarLivroInexistente() throws Exception {
+		atualizar(UUID.randomUUID(), tokenDeAdmin, json("Vidas Secas", "Graciliano Ramos", "Romance", null))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.detail").value("Livro não encontrado."));
+	}
+
+	@Test
+	void naoDeveAtualizarComDadosInvalidos() throws Exception {
+		Livro livro = livroRepository.saveAndFlush(new Livro("Vidas Secas", "Graciliano Ramos", "Romance"));
+
+		atualizar(livro.getId(), tokenDeAdmin, json(" ", "Graciliano Ramos", "Romance", null))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("O título é obrigatório."));
+	}
+
+	@Test
+	void naoDevePermitirQueLeitorAtualizeLivro() throws Exception {
+		Livro livro = livroRepository.saveAndFlush(new Livro("Vidas Secas", "Graciliano Ramos", "Romance"));
+
+		atualizar(livro.getId(), tokenDeLeitor, json("Alterado", "Graciliano Ramos", "Romance", null))
+				.andExpect(status().isForbidden())
+				.andExpect(jsonPath("$.detail").value("Você não tem permissão para realizar esta ação."));
+	}
+
+	private ResultActions atualizar(UUID id, String token, String corpo) throws Exception {
+		return mockMvc.perform(put("/livros/{id}", id)
+				.header(HttpHeaders.AUTHORIZATION, token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(corpo));
+	}
+
 	private ResultActions cadastrar(String corpo) throws Exception {
 		return mockMvc.perform(post("/livros")
+				.header(HttpHeaders.AUTHORIZATION, tokenDeAdmin)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(corpo));
 	}
@@ -155,6 +274,16 @@ class LivroControllerTests {
 		return """
 				{"titulo": "%s", "autor": "%s", "genero": "%s", "isbn": %s}
 				""".formatted(titulo, autor, genero, isbnJson);
+	}
+
+	private Usuario novoUsuario(TipoConta tipoConta) {
+		String email = "teste-" + UUID.randomUUID().toString().substring(0, 8) + "@bookverse.com";
+		return usuarioRepository.save(new Usuario("Usuário Teste", email, "hash-ficticio",
+				LocalDate.of(2000, 1, 15), tipoConta));
+	}
+
+	private String tokenDe(Usuario usuario) {
+		return "Bearer " + jwtService.gerarToken(usuario).token();
 	}
 
 	/** ISBN de 13 dígitos começando com 999 para nunca colidir com livros reais do banco. */

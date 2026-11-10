@@ -7,9 +7,8 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+/** O autor da avaliação é o usuário do token de acesso, por isso não há usuarioId aqui. */
 public record AvaliacaoCadastroRequest(
-		@NotNull(message = "O identificador do usuário é obrigatório.")
-		UUID usuarioId,
 		@NotNull(message = "O identificador do livro é obrigatório.")
 		UUID livroId,
 		@NotNull(message = "A nota é obrigatória.")
