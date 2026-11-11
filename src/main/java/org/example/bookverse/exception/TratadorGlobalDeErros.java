@@ -32,6 +32,11 @@ public class TratadorGlobalDeErros {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, mensagem);
 	}
 
+	@ExceptionHandler(CredenciaisInvalidasException.class)
+	public ProblemDetail tratarCredenciaisInvalidas(CredenciaisInvalidasException exception) {
+		return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+	}
+
 	@ExceptionHandler(AcessoNegadoException.class)
 	public ProblemDetail tratarAcessoNegado(AcessoNegadoException exception) {
 		return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());

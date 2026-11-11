@@ -44,8 +44,8 @@ public class AvaliacaoService {
 	}
 
 	@Transactional
-	public AvaliacaoResponse cadastrar(AvaliacaoCadastroRequest request) {
-		Usuario usuario = usuarioRepository.findById(request.usuarioId())
+	public AvaliacaoResponse cadastrar(AvaliacaoCadastroRequest request, UUID idDoUsuarioLogado) {
+		Usuario usuario = usuarioRepository.findById(idDoUsuarioLogado)
 				.orElseThrow(() -> new RecursoNaoEncontradoException(MENSAGEM_USUARIO_NAO_ENCONTRADO));
 		Livro livro = livroRepository.findById(request.livroId())
 				.orElseThrow(() -> new RecursoNaoEncontradoException(MENSAGEM_LIVRO_NAO_ENCONTRADO));
@@ -94,9 +94,9 @@ public class AvaliacaoService {
 	}
 
 	@Transactional
-	public AvaliacaoResponse atualizar(UUID id, AvaliacaoAtualizacaoRequest request) {
+	public AvaliacaoResponse atualizar(UUID id, AvaliacaoAtualizacaoRequest request, UUID idDoUsuarioLogado) {
 		Avaliacao avaliacao = buscarAvaliacao(id);
-		validarTitularidade(avaliacao, request.usuarioId());
+		validarTitularidade(avaliacao, idDoUsuarioLogado);
 
 		avaliacao.setNota(request.nota());
 		avaliacao.setTextoResenha(textoOpcional(request.textoResenha()));
@@ -105,9 +105,9 @@ public class AvaliacaoService {
 	}
 
 	@Transactional
-	public void excluir(UUID id, UUID usuarioId) {
+	public void excluir(UUID id, UUID idDoUsuarioLogado) {
 		Avaliacao avaliacao = buscarAvaliacao(id);
-		validarTitularidade(avaliacao, usuarioId);
+		validarTitularidade(avaliacao, idDoUsuarioLogado);
 		avaliacaoRepository.delete(avaliacao);
 	}
 

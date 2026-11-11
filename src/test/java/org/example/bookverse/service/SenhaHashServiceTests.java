@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SenhaHashServiceTests {
 
@@ -25,5 +26,26 @@ class SenhaHashServiceTests {
 	void deveGerarHashesDiferentesParaAMesmaSenha() {
 		// Cada hash usa um sal aleatório
 		assertNotEquals(senhaHashService.hash("mesma-senha"), senhaHashService.hash("mesma-senha"));
+	}
+
+	@Test
+	void deveAceitarSenhaCorreta() {
+		String hash = senhaHashService.hash("senha-de-teste-segura");
+
+		assertTrue(senhaHashService.verificar("senha-de-teste-segura", hash));
+	}
+
+	@Test
+	void deveRecusarSenhaIncorreta() {
+		String hash = senhaHashService.hash("senha-de-teste-segura");
+
+		assertFalse(senhaHashService.verificar("senha-errada", hash));
+	}
+
+	@Test
+	void deveRecusarHashEmFormatoDesconhecido() {
+		assertFalse(senhaHashService.verificar("qualquer", "hash-ficticio"));
+		assertFalse(senhaHashService.verificar("qualquer", "pbkdf2-sha256$abc$@@$@@"));
+		assertFalse(senhaHashService.verificar("qualquer", null));
 	}
 }

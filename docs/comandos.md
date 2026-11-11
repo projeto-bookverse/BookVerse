@@ -30,6 +30,16 @@ conseguir conectar ao PostgreSQL configurado.
 
 ## Executar os testes
 
+```powershell
+.\mvnw.cmd test
+```
+
+Para limpar os artefatos anteriores e executar os testes novamente:
+
+```powershell
+.\mvnw.cmd clean test
+```
+
 ## Carregar o catálogo de livros
 
 O catálogo inicial (54 livros, com ISBN, capa e sinopse) fica em
@@ -44,16 +54,6 @@ $env:DB_PASSWORD = "sua_senha"
 - Pode ser executado mais de uma vez: livros já existentes (mesmo ISBN, ou
   mesmo título e autor quando não há ISBN) são atualizados, não duplicados.
 - Para conferir no pgAdmin: `SELECT count(*) FROM livros;`
-
-```powershell
-.\mvnw.cmd test
-```
-
-Para limpar os artefatos anteriores e executar os testes novamente:
-
-```powershell
-.\mvnw.cmd clean test
-```
 
 ## Gerar o pacote
 

@@ -17,12 +17,26 @@ public record UsuarioResponse(
 		String bio,
 		TipoConta tipoConta) {
 
+	/** Perfil completo, para o próprio usuário. */
 	public static UsuarioResponse from(Usuario usuario) {
 		return new UsuarioResponse(
 				usuario.getId(),
 				usuario.getNome(),
 				usuario.getEmail(),
 				usuario.getDataNascimento(),
+				usuario.getDataCadastro(),
+				usuario.getFotoPerfil(),
+				usuario.getBio(),
+				usuario.getTipoConta());
+	}
+
+	/** Perfil visto por outra pessoa: sem e-mail e sem data de nascimento, que são dados pessoais. */
+	public static UsuarioResponse publico(Usuario usuario) {
+		return new UsuarioResponse(
+				usuario.getId(),
+				usuario.getNome(),
+				null,
+				null,
 				usuario.getDataCadastro(),
 				usuario.getFotoPerfil(),
 				usuario.getBio(),

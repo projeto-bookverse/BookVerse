@@ -1,11 +1,14 @@
 package org.example.bookverse.service;
 
+import org.example.bookverse.dto.UsuarioAtualizacaoRequest;
 import org.example.bookverse.dto.UsuarioCadastroRequest;
 import org.example.bookverse.dto.UsuarioResponse;
 import org.example.bookverse.entity.Usuario;
 import org.example.bookverse.entity.enums.TipoConta;
+import org.example.bookverse.exception.AcessoNegadoException;
 import org.example.bookverse.exception.ConflitoException;
 import org.example.bookverse.exception.DadosInvalidosException;
+import org.example.bookverse.exception.RecursoNaoEncontradoException;
 import org.example.bookverse.repository.UsuarioRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -67,16 +71,42 @@ public class UsuarioService {
 		}
 	}
 
+	/** O próprio usuário vê o perfil completo; os demais não veem e-mail nem data de nascimento. */
+	@Transactional(readOnly = true)
+	public UsuarioResponse buscarPorId(UUID id, UUID idDoUsuarioLogado) {
+		Usuario usuario = buscarUsuario(id);
+		return id.equals(idDoUsuarioLogado) ? UsuarioResponse.from(usuario) : UsuarioResponse.publico(usuario);
+	}
+
+	/** Edita nome, foto e biografia. Cada usuário só pode editar o próprio perfil. */
+	@Transactional
+	public UsuarioResponse atualizar(UUID id, UsuarioAtualizacaoRequest request, UUID idDoUsuarioLogado) {
+		if (!id.equals(idDoUsuarioLogado)) {
+			throw new AcessoNegadoException("Você só pode editar o próprio perfil.");
+		}
+		if (request == null) {
+			throw new DadosInvalidosException("Os dados do perfil não foram enviados.");
+		}
+		validarNome(request.nome());
+		validarFotoPerfil(request.fotoPerfil());
+
+		Usuario usuario = buscarUsuario(id);
+		usuario.setNome(request.nome().trim());
+		usuario.setFotoPerfil(textoOpcional(request.fotoPerfil()));
+		usuario.setBio(textoOpcional(request.bio()));
+		return UsuarioResponse.from(usuarioRepository.saveAndFlush(usuario));
+	}
+
+	private Usuario buscarUsuario(UUID id) {
+		return usuarioRepository.findById(id)
+				.orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
+	}
+
 	private void validar(UsuarioCadastroRequest request) {
 		if (request == null) {
 			throw new DadosInvalidosException("Os dados do cadastro não foram enviados.");
 		}
-		if (estaVazio(request.nome())) {
-			throw new DadosInvalidosException("O nome é obrigatório.");
-		}
-		if (request.nome().trim().length() > TAMANHO_MAXIMO_NOME) {
-			throw new DadosInvalidosException("O nome deve ter no máximo " + TAMANHO_MAXIMO_NOME + " caracteres.");
-		}
+		validarNome(request.nome());
 		if (estaVazio(request.email())) {
 			throw new DadosInvalidosException("O e-mail é obrigatório.");
 		}
@@ -99,8 +129,21 @@ public class UsuarioService {
 		if (request.dataNascimento().isAfter(LocalDate.now())) {
 			throw new DadosInvalidosException("A data de nascimento não pode estar no futuro.");
 		}
-		String fotoPerfil = textoOpcional(request.fotoPerfil());
-		if (fotoPerfil != null && fotoPerfil.length() > TAMANHO_MAXIMO_FOTO_PERFIL) {
+		validarFotoPerfil(request.fotoPerfil());
+	}
+
+	private static void validarNome(String nome) {
+		if (estaVazio(nome)) {
+			throw new DadosInvalidosException("O nome é obrigatório.");
+		}
+		if (nome.trim().length() > TAMANHO_MAXIMO_NOME) {
+			throw new DadosInvalidosException("O nome deve ter no máximo " + TAMANHO_MAXIMO_NOME + " caracteres.");
+		}
+	}
+
+	private static void validarFotoPerfil(String fotoPerfil) {
+		String foto = textoOpcional(fotoPerfil);
+		if (foto != null && foto.length() > TAMANHO_MAXIMO_FOTO_PERFIL) {
 			throw new DadosInvalidosException(
 					"O endereço da foto de perfil deve ter no máximo " + TAMANHO_MAXIMO_FOTO_PERFIL + " caracteres.");
 		}

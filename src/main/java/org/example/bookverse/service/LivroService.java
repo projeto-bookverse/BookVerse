@@ -5,6 +5,7 @@ import org.example.bookverse.dto.LivroResponse;
 import org.example.bookverse.entity.Livro;
 import org.example.bookverse.exception.ConflitoException;
 import org.example.bookverse.exception.DadosInvalidosException;
+import org.example.bookverse.exception.RecursoNaoEncontradoException;
 import org.example.bookverse.repository.LivroRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 public class LivroService {
@@ -24,6 +26,7 @@ public class LivroService {
 
 	private static final String RESTRICAO_ISBN_UNICO = "livros_isbn_key";
 	private static final String MENSAGEM_ISBN_CADASTRADO = "Já existe um livro cadastrado com o ISBN: ";
+	private static final String MENSAGEM_LIVRO_NAO_ENCONTRADO = "Livro não encontrado.";
 
 	private final LivroRepository livroRepository;
 
@@ -44,17 +47,46 @@ public class LivroService {
 				request.titulo().trim(),
 				request.autor().trim(),
 				request.genero().trim());
+		preencher(livro, request, isbn);
+		return salvar(livro, isbn);
+	}
+
+	/** Substitui todos os dados do livro. Campos opcionais não enviados ficam vazios. */
+	@Transactional
+	public LivroResponse atualizar(UUID id, LivroRequest request) {
+		validar(request);
+
+		Livro livro = livroRepository.findById(id)
+				.orElseThrow(() -> new RecursoNaoEncontradoException(MENSAGEM_LIVRO_NAO_ENCONTRADO));
+
+		String isbn = normalizarIsbn(request.isbn());
+		if (isbn != null && livroRepository.findByIsbn(isbn)
+				.filter(outro -> !outro.getId().equals(id))
+				.isPresent()) {
+			throw new ConflitoException(MENSAGEM_ISBN_CADASTRADO + isbn);
+		}
+
+		livro.setTitulo(request.titulo().trim());
+		livro.setAutor(request.autor().trim());
+		livro.setGenero(request.genero().trim());
+		preencher(livro, request, isbn);
+		return salvar(livro, isbn);
+	}
+
+	private static void preencher(Livro livro, LivroRequest request, String isbn) {
 		livro.setIsbn(isbn);
 		livro.setCapaUrl(textoOpcional(request.capaUrl()));
 		livro.setSinopse(textoOpcional(request.sinopse()));
 		livro.setAnoPublicacao(request.anoPublicacao());
 		livro.setNumPaginas(request.numPaginas());
+	}
 
+	private LivroResponse salvar(Livro livro, String isbn) {
 		try {
 			return LivroResponse.from(livroRepository.saveAndFlush(livro));
 		} catch (DataIntegrityViolationException exception) {
-			// Dois cadastros simultâneos com o mesmo ISBN passam pela checagem acima;
-			// o segundo é barrado pela restrição única do banco.
+			// Duas gravações simultâneas com o mesmo ISBN passam pela checagem prévia;
+			// a segunda é barrada pela restrição única do banco.
 			if (violouRestricao(exception, RESTRICAO_ISBN_UNICO)) {
 				throw new ConflitoException(MENSAGEM_ISBN_CADASTRADO + isbn);
 			}
