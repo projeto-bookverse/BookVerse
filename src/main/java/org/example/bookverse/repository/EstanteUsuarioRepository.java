@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface EstanteUsuarioRepository extends JpaRepository<EstanteUsuario, UUID> {
 
 	List<EstanteUsuario> findByUsuarioId(UUID usuarioId);
+
+	boolean existsByUsuarioIdAndLivroId(UUID usuarioId, UUID livroId);
 }
