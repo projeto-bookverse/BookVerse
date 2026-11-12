@@ -1,9 +1,11 @@
 package org.example.bookverse.controller;
 
 import org.example.bookverse.config.JwtService;
+import org.example.bookverse.entity.Avaliacao;
 import org.example.bookverse.entity.Livro;
 import org.example.bookverse.entity.Usuario;
 import org.example.bookverse.entity.enums.TipoConta;
+import org.example.bookverse.repository.AvaliacaoRepository;
 import org.example.bookverse.repository.LivroRepository;
 import org.example.bookverse.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -48,6 +51,9 @@ class LivroControllerTests {
 	private LivroRepository livroRepository;
 
 	@Autowired
+	private AvaliacaoRepository avaliacaoRepository;
+
+	@Autowired
 	private UsuarioRepository usuarioRepository;
 
 	@Autowired
@@ -61,6 +67,58 @@ class LivroControllerTests {
 	void configurar() {
 		tokenDeAdmin = tokenDe(novoUsuario(TipoConta.ADMIN));
 		tokenDeLeitor = tokenDe(novoUsuario(TipoConta.LEITOR));
+	}
+
+	@Test
+	void deveListarLivrosComVinteItensPorPagina() throws Exception {
+		long existentes = livroRepository.count();
+		for (int indice = 0; indice < 21; indice++) {
+			livroRepository.save(new Livro("Livro " + indice, "Autor", "Romance"));
+		}
+		livroRepository.flush();
+		long total = existentes + 21;
+
+		mockMvc.perform(get("/livros")
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
+						.param("page", "0"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content.length()").value(20))
+				.andExpect(jsonPath("$.totalElements").value(total))
+				.andExpect(jsonPath("$.number").value(0));
+
+		mockMvc.perform(get("/livros")
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
+						.param("page", "1"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content.length()").value(Math.min(20, total - 20)))
+				.andExpect(jsonPath("$.number").value(1));
+	}
+
+	@Test
+	void deveRetornarMediaArredondadaEQuantidadeDeAvaliacoes() throws Exception {
+		Livro livro = livroRepository.saveAndFlush(new Livro("Vidas Secas", "Graciliano Ramos", "Romance"));
+		short[] notas = {4, 4, 5};
+		for (short nota : notas) {
+			Usuario usuario = usuarioRepository.saveAndFlush(novoUsuario(TipoConta.LEITOR));
+			avaliacaoRepository.saveAndFlush(new Avaliacao(usuario, livro, nota));
+		}
+
+		mockMvc.perform(get("/livros/{id}", livro.getId())
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.mediaNotas").value(4.3))
+				.andExpect(jsonPath("$.totalAvaliacoes").value(3));
+	}
+
+	@Test
+	void deveRetornarZeroQuandoLivroAindaNaoTemAvaliacoes() throws Exception {
+		Livro livro = livroRepository.saveAndFlush(new Livro("Livro sem notas", "Autor", "Romance"));
+
+		mockMvc.perform(get("/livros/{id}", livro.getId())
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.mediaNotas").value(0.0))
+				.andExpect(jsonPath("$.totalAvaliacoes").value(0));
 	}
 
 	@Test

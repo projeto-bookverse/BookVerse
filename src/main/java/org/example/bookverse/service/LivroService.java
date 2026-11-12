@@ -6,17 +6,25 @@ import org.example.bookverse.entity.Livro;
 import org.example.bookverse.exception.ConflitoException;
 import org.example.bookverse.exception.DadosInvalidosException;
 import org.example.bookverse.exception.RecursoNaoEncontradoException;
+import org.example.bookverse.repository.AvaliacaoRepository;
 import org.example.bookverse.repository.LivroRepository;
+import org.example.bookverse.repository.projection.ResumoAvaliacoesLivro;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class LivroService {
+	private static final int LIVROS_POR_PAGINA = 20;
 
 	// Limites iguais aos das colunas da tabela livros
 	private static final int TAMANHO_MAXIMO_TITULO = 255;
@@ -29,9 +37,50 @@ public class LivroService {
 	private static final String MENSAGEM_LIVRO_NAO_ENCONTRADO = "Livro não encontrado.";
 
 	private final LivroRepository livroRepository;
+	private final AvaliacaoRepository avaliacaoRepository;
 
-	public LivroService(LivroRepository livroRepository) {
+	public LivroService(LivroRepository livroRepository, AvaliacaoRepository avaliacaoRepository) {
 		this.livroRepository = livroRepository;
+		this.avaliacaoRepository = avaliacaoRepository;
+	}
+
+	@Transactional(readOnly = true)
+	public Page<LivroResponse> listar(int pagina) {
+		if (pagina < 0) {
+			throw new DadosInvalidosException("O número da página não pode ser negativo.");
+		}
+
+		Page<Livro> livros = livroRepository.findAll(PageRequest.of(pagina, LIVROS_POR_PAGINA));
+		Map<UUID, ResumoAvaliacoesLivro> resumos = buscarResumos(livros.getContent());
+		return livros.map(livro -> respostaComResumo(livro, resumos.get(livro.getId())));
+	}
+
+	@Transactional(readOnly = true)
+	public LivroResponse buscarPorId(UUID id) {
+		Livro livro = livroRepository.findById(id)
+				.orElseThrow(() -> new RecursoNaoEncontradoException(MENSAGEM_LIVRO_NAO_ENCONTRADO));
+		Double media = avaliacaoRepository.calcularMediaNotasPorLivroId(id);
+		long total = avaliacaoRepository.countByLivroId(id);
+		return LivroResponse.from(livro, media, total);
+	}
+
+	private Map<UUID, ResumoAvaliacoesLivro> buscarResumos(List<Livro> livros) {
+		if (livros.isEmpty()) {
+			return Map.of();
+		}
+		List<UUID> ids = livros.stream().map(Livro::getId).toList();
+		Map<UUID, ResumoAvaliacoesLivro> resumos = new HashMap<>();
+		for (ResumoAvaliacoesLivro resumo : avaliacaoRepository.resumirPorLivroIds(ids)) {
+			resumos.put(resumo.getLivroId(), resumo);
+		}
+		return resumos;
+	}
+
+	private static LivroResponse respostaComResumo(Livro livro, ResumoAvaliacoesLivro resumo) {
+		if (resumo == null) {
+			return LivroResponse.from(livro);
+		}
+		return LivroResponse.from(livro, resumo.getMediaNotas(), resumo.getTotalAvaliacoes());
 	}
 
 	@Transactional
