@@ -4,11 +4,26 @@
 
 1. O usuário envia e-mail e senha para `POST /autenticacao/login`.
 2. A API confere a senha com o hash gravado no cadastro (PBKDF2-SHA256).
-3. Se estiver correta, devolve um **token JWT** válido por 2 horas:
+3. Se estiver correta, devolve um **token JWT** válido por 2 horas, junto com os dados
+   básicos de quem entrou:
 
 ```json
-{ "token": "eyJhbGciOiJIUzI1NiJ9...", "tipo": "Bearer", "expiraEm": "2026-11-03T22:30:00-03:00" }
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "tipo": "Bearer",
+  "expiraEm": "2026-11-03T22:30:00-03:00",
+  "usuario": {
+    "id": "3f2b8c1e-...",
+    "nome": "Leitora Teste",
+    "email": "leitora.teste@example.com",
+    "tipoConta": "LEITOR"
+  }
+}
 ```
+
+   Com `usuario`, o front-end mostra o nome de quem entrou, monta as rotas que usam o
+   ID (perfil e estante) e sabe se a conta é de administrador, sem uma chamada extra.
+   A senha e o hash nunca aparecem.
 
 4. Nas próximas requisições, o front-end envia o token no cabeçalho
    `Authorization: Bearer {token}`. Depois que ele expira, é preciso entrar de novo.
