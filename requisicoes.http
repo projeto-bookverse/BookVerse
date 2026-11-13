@@ -67,6 +67,44 @@ Content-Type: application/json
   "sinopse": "A saga de uma família de retirantes no sertão nordestino."
 }
 
+### Listar o catálogo (página 0, 20 livros por padrão, em ordem de título)
+GET http://localhost:8080/livros?page=0&size=20
+Authorization: Bearer {{token}}
+
+### Consultar um livro, com média de notas e total de avaliações
+GET http://localhost:8080/livros/COLE-O-ID-DO-LIVRO
+Authorization: Bearer {{token}}
+
+### Adicionar um livro à própria estante (status: QUERO_LER, LENDO, LIDO ou ABANDONADO)
+POST http://localhost:8080/estantes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "livroId": "COLE-O-ID-DO-LIVRO",
+  "status": "LENDO",
+  "dataInicio": "2026-11-01"
+}
+
+### Alterar status e datas de um item da própria estante (troque pelo ID do item)
+PUT http://localhost:8080/estantes/COLE-O-ID-DO-ITEM
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "LIDO",
+  "dataInicio": "2026-11-01",
+  "dataFim": "2026-11-12"
+}
+
+### Remover um item da própria estante
+DELETE http://localhost:8080/estantes/COLE-O-ID-DO-ITEM
+Authorization: Bearer {{token}}
+
+### Ver a estante de um usuário
+GET http://localhost:8080/usuarios/COLE-O-ID-DO-USUARIO/estante
+Authorization: Bearer {{token}}
+
 ### Avaliar um livro (troque pelo ID de um livro cadastrado)
 POST http://localhost:8080/avaliacoes
 Authorization: Bearer {{token}}
