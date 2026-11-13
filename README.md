@@ -28,6 +28,19 @@ A API fica disponível em `http://localhost:8080`. Somente o cadastro (`POST /us
 (`POST /autenticacao/login`) funcionam sem token; as demais rotas exigem o cabeçalho
 `Authorization: Bearer {token}`.
 
+### Front-end Web (CORS)
+
+O navegador só deixa o front-end Web chamar a API se o endereço dele estiver liberado. Por padrão,
+a API aceita o front-end em `http://localhost:8000` e `http://127.0.0.1:8000`, com os métodos GET,
+POST, PUT e DELETE. Para usar outro endereço, defina a variável `CORS_ORIGENS` antes de iniciar a
+API (vários endereços separados por vírgula):
+
+```powershell
+$env:CORS_ORIGENS = "http://localhost:8000,http://localhost:5173"
+```
+
+Ferramentas como IntelliJ, Postman e o aplicativo Flutter não passam por essa regra.
+
 ## Testes
 
 ```powershell

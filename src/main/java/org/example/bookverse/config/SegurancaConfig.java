@@ -6,8 +6,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,13 +24,19 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import tools.jackson.databind.json.JsonMapper;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,6 +57,9 @@ public class SegurancaConfig {
 	public SecurityFilterChain filtroDeSeguranca(HttpSecurity http, JsonMapper jsonMapper) throws Exception {
 		AuthenticationEntryPoint naoAutenticado = naoAutenticado(jsonMapper);
 		http
+				// Usa a regra de CORS do bean abaixo; a pergunta prévia do navegador (OPTIONS) é respondida antes
+				// da checagem de token, que ela nunca leva
+				.cors(Customizer.withDefaults())
 				// API sem sessão e sem formulários: cada requisição se identifica pelo token, então CSRF não se aplica
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(sessao -> sessao.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -65,6 +76,30 @@ public class SegurancaConfig {
 						.authenticationEntryPoint(naoAutenticado)
 						.accessDeniedHandler(acessoNegado(jsonMapper)));
 		return http.build();
+	}
+
+	/**
+	 * CORS (RNF09): só os endereços do front-end configurados em bookverse.cors.origens podem chamar a API pelo
+	 * navegador, com os métodos GET, POST, PUT e DELETE. O token vai no cabeçalho Authorization, não em cookie,
+	 * então não é preciso liberar credenciais do navegador.
+	 */
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource(@Value("${bookverse.cors.origens}") String origens) {
+		CorsConfiguration regra = new CorsConfiguration();
+		regra.setAllowedOrigins(Arrays.stream(origens.split(","))
+				.map(String::trim)
+				.filter(origem -> !origem.isEmpty())
+				.toList());
+		regra.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+		regra.setAllowedHeaders(List.of(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE));
+		// Deixa o front ler o endereço do recurso criado (respostas 201)
+		regra.setExposedHeaders(List.of(HttpHeaders.LOCATION));
+		// O navegador guarda a resposta da pergunta prévia por 1 hora
+		regra.setMaxAge(Duration.ofHours(1));
+
+		UrlBasedCorsConfigurationSource fonte = new UrlBasedCorsConfigurationSource();
+		fonte.registerCorsConfiguration("/**", regra);
+		return fonte;
 	}
 
 	@Bean
