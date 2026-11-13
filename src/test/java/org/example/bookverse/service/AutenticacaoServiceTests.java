@@ -3,6 +3,7 @@ package org.example.bookverse.service;
 import org.example.bookverse.config.JwtService;
 import org.example.bookverse.dto.LoginRequest;
 import org.example.bookverse.dto.TokenResponse;
+import org.example.bookverse.dto.UsuarioLogadoResponse;
 import org.example.bookverse.entity.Usuario;
 import org.example.bookverse.entity.enums.TipoConta;
 import org.example.bookverse.exception.CredenciaisInvalidasException;
@@ -70,7 +71,8 @@ class AutenticacaoServiceTests {
 	void deveEntrarComSenhaCorreta() {
 		Usuario usuario = new Usuario("Leitora", "leitora@bookverse.com", "hash-real", LocalDate.of(2000, 1, 15),
 				TipoConta.LEITOR);
-		TokenResponse token = new TokenResponse("token", "Bearer", OffsetDateTime.now());
+		TokenResponse token = new TokenResponse("token", "Bearer", OffsetDateTime.now(),
+				UsuarioLogadoResponse.from(usuario));
 		when(usuarioRepository.findByEmail("leitora@bookverse.com")).thenReturn(Optional.of(usuario));
 		when(senhaHashService.verificar("senha-certa", "hash-real")).thenReturn(true);
 		when(jwtService.gerarToken(usuario)).thenReturn(token);

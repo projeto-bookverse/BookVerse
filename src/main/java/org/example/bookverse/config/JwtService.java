@@ -1,6 +1,7 @@
 package org.example.bookverse.config;
 
 import org.example.bookverse.dto.TokenResponse;
+import org.example.bookverse.dto.UsuarioLogadoResponse;
 import org.example.bookverse.entity.Usuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -49,7 +50,8 @@ public class JwtService {
 		JwsHeader cabecalho = JwsHeader.with(MacAlgorithm.HS256).build();
 		String token = jwtEncoder.encode(JwtEncoderParameters.from(cabecalho, dados)).getTokenValue();
 
-		return new TokenResponse(token, "Bearer", OffsetDateTime.ofInstant(expiraEm, ZoneId.systemDefault()));
+		return new TokenResponse(token, "Bearer", OffsetDateTime.ofInstant(expiraEm, ZoneId.systemDefault()),
+				UsuarioLogadoResponse.from(usuario));
 	}
 
 	/** ID do usuário que fez a requisição, lido do token já validado. */

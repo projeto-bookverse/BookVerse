@@ -22,14 +22,15 @@ Content-Type: application/json
 
 > {%
     client.global.set("token", response.body.token);
+    client.global.set("usuarioId", response.body.usuario.id);
 %}
 
-### Consultar um perfil (troque pelo ID devolvido no cadastro)
-GET http://localhost:8080/usuarios/COLE-O-ID-DO-USUARIO
+### Consultar o próprio perfil (o ID vem do login)
+GET http://localhost:8080/usuarios/{{usuarioId}}
 Authorization: Bearer {{token}}
 
 ### Editar o próprio perfil
-PUT http://localhost:8080/usuarios/COLE-O-ID-DO-USUARIO
+PUT http://localhost:8080/usuarios/{{usuarioId}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -102,7 +103,7 @@ DELETE http://localhost:8080/estantes/COLE-O-ID-DO-ITEM
 Authorization: Bearer {{token}}
 
 ### Ver a estante de um usuário
-GET http://localhost:8080/usuarios/COLE-O-ID-DO-USUARIO/estante
+GET http://localhost:8080/usuarios/{{usuarioId}}/estante
 Authorization: Bearer {{token}}
 
 ### Avaliar um livro (troque pelo ID de um livro cadastrado)

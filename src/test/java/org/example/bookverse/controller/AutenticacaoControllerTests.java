@@ -62,6 +62,19 @@ class AutenticacaoControllerTests {
 	}
 
 	@Test
+	void deveDevolverOsDadosDoUsuarioJuntoComOToken() throws Exception {
+		entrar(email, SENHA)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.usuario.id").value(usuarioId))
+				.andExpect(jsonPath("$.usuario.nome").value("Leitora Teste"))
+				.andExpect(jsonPath("$.usuario.email").value(email))
+				.andExpect(jsonPath("$.usuario.tipoConta").value("LEITOR"))
+				// Nunca expõe a senha nem o hash
+				.andExpect(jsonPath("$.usuario.senha").doesNotExist())
+				.andExpect(jsonPath("$.usuario.senhaHash").doesNotExist());
+	}
+
+	@Test
 	void deveAcessarRotaProtegidaComOTokenRecebido() throws Exception {
 		String token = tokenDoLogin(email, SENHA);
 
