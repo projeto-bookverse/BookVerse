@@ -2,8 +2,8 @@ package org.example.bookverse.controller;
 
 import org.example.bookverse.dto.LivroRequest;
 import org.example.bookverse.dto.LivroResponse;
+import org.example.bookverse.dto.PaginaResponse;
 import org.example.bookverse.service.LivroService;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,9 +27,12 @@ public class LivroController {
 		this.livroService = livroService;
 	}
 
+	/** Catálogo paginado: page começa em 0 e size tem padrão de 20 livros. */
 	@GetMapping
-	public Page<LivroResponse> listar(@RequestParam(defaultValue = "0") int page) {
-		return livroService.listar(page);
+	public PaginaResponse<LivroResponse> listar(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "" + LivroService.LIVROS_POR_PAGINA) int size) {
+		return livroService.listar(page, size);
 	}
 
 	@GetMapping("/{id}")

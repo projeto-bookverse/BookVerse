@@ -2,6 +2,7 @@ package org.example.bookverse.service;
 
 import org.example.bookverse.dto.LivroRequest;
 import org.example.bookverse.dto.LivroResponse;
+import org.example.bookverse.dto.PaginaResponse;
 import org.example.bookverse.entity.Livro;
 import org.example.bookverse.exception.ConflitoException;
 import org.example.bookverse.exception.DadosInvalidosException;
@@ -12,6 +13,7 @@ import org.example.bookverse.repository.projection.ResumoAvaliacoesLivro;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,11 @@ import java.util.UUID;
 
 @Service
 public class LivroService {
-	private static final int LIVROS_POR_PAGINA = 20;
+
+	/** Padrão do catálogo (RNF11). */
+	public static final int LIVROS_POR_PAGINA = 20;
+	private static final int TAMANHO_MAXIMO_PAGINA = 100;
+	private static final Sort ORDEM_DO_CATALOGO = Sort.by("titulo", "id");
 
 	// Limites iguais aos das colunas da tabela livros
 	private static final int TAMANHO_MAXIMO_TITULO = 255;
@@ -44,15 +50,23 @@ public class LivroService {
 		this.avaliacaoRepository = avaliacaoRepository;
 	}
 
+	/**
+	 * Lista o catálogo em ordem alfabética de título. O ID desempata livros com o mesmo título, para que a
+	 * ordem seja sempre a mesma e nenhum livro se repita ou suma entre uma página e outra.
+	 */
 	@Transactional(readOnly = true)
-	public Page<LivroResponse> listar(int pagina) {
+	public PaginaResponse<LivroResponse> listar(int pagina, int tamanho) {
 		if (pagina < 0) {
 			throw new DadosInvalidosException("O número da página não pode ser negativo.");
 		}
+		if (tamanho < 1 || tamanho > TAMANHO_MAXIMO_PAGINA) {
+			throw new DadosInvalidosException(
+					"O tamanho da página deve ser de 1 a " + TAMANHO_MAXIMO_PAGINA + " livros.");
+		}
 
-		Page<Livro> livros = livroRepository.findAll(PageRequest.of(pagina, LIVROS_POR_PAGINA));
+		Page<Livro> livros = livroRepository.findAll(PageRequest.of(pagina, tamanho, ORDEM_DO_CATALOGO));
 		Map<UUID, ResumoAvaliacoesLivro> resumos = buscarResumos(livros.getContent());
-		return livros.map(livro -> respostaComResumo(livro, resumos.get(livro.getId())));
+		return PaginaResponse.from(livros.map(livro -> respostaComResumo(livro, resumos.get(livro.getId()))));
 	}
 
 	@Transactional(readOnly = true)

@@ -79,19 +79,58 @@ class LivroControllerTests {
 		long total = existentes + 21;
 
 		mockMvc.perform(get("/livros")
-						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
-						.param("page", "0"))
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content.length()").value(20))
-				.andExpect(jsonPath("$.totalElements").value(total))
-				.andExpect(jsonPath("$.number").value(0));
+				.andExpect(jsonPath("$.conteudo.length()").value(20))
+				.andExpect(jsonPath("$.pagina").value(0))
+				.andExpect(jsonPath("$.tamanho").value(20))
+				.andExpect(jsonPath("$.totalItens").value(total))
+				.andExpect(jsonPath("$.totalPaginas").value((total + 19) / 20));
 
 		mockMvc.perform(get("/livros")
 						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
 						.param("page", "1"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content.length()").value(Math.min(20, total - 20)))
-				.andExpect(jsonPath("$.number").value(1));
+				.andExpect(jsonPath("$.conteudo.length()").value(Math.min(20, total - 20)))
+				.andExpect(jsonPath("$.pagina").value(1));
+	}
+
+	@Test
+	void deveListarCatalogoEmOrdemAlfabeticaDeTitulo() throws Exception {
+		// Títulos começando com "000" ficam antes de qualquer livro já cadastrado no banco
+		for (String titulo : new String[] {"000 Ordem C", "000 Ordem A", "000 Ordem B"}) {
+			livroRepository.save(new Livro(titulo, "Autor", "Romance"));
+		}
+		livroRepository.flush();
+
+		mockMvc.perform(get("/livros")
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
+						.param("size", "3"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.tamanho").value(3))
+				.andExpect(jsonPath("$.conteudo[0].titulo").value("000 Ordem A"))
+				.andExpect(jsonPath("$.conteudo[1].titulo").value("000 Ordem B"))
+				.andExpect(jsonPath("$.conteudo[2].titulo").value("000 Ordem C"));
+	}
+
+	@Test
+	void naoDeveListarComPaginaOuTamanhoInvalidos() throws Exception {
+		mockMvc.perform(get("/livros")
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
+						.param("page", "-1"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("O número da página não pode ser negativo."));
+
+		mockMvc.perform(get("/livros")
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor)
+						.param("size", "0"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("O tamanho da página deve ser de 1 a 100 livros."));
+	}
+
+	@Test
+	void naoDeveListarCatalogoSemEstarLogado() throws Exception {
+		mockMvc.perform(get("/livros")).andExpect(status().isUnauthorized());
 	}
 
 	@Test
@@ -119,6 +158,14 @@ class LivroControllerTests {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.mediaNotas").value(0.0))
 				.andExpect(jsonPath("$.totalAvaliacoes").value(0));
+	}
+
+	@Test
+	void naoDeveConsultarLivroInexistente() throws Exception {
+		mockMvc.perform(get("/livros/{id}", UUID.randomUUID())
+						.header(HttpHeaders.AUTHORIZATION, tokenDeLeitor))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.detail").value("Livro não encontrado."));
 	}
 
 	@Test

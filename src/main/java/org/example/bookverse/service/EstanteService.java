@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -42,10 +41,11 @@ public class EstanteService {
 		this.livroRepository = livroRepository;
 	}
 
+	/** Adiciona o livro à estante do usuário logado (identificado pelo token). */
 	@Transactional
-	public EstanteResponse adicionar(EstanteRequest request) {
+	public EstanteResponse adicionar(EstanteRequest request, UUID idDoUsuarioLogado) {
 		validarDatas(request.dataInicio(), request.dataFim());
-		Usuario usuario = usuarioRepository.findById(request.usuarioId())
+		Usuario usuario = usuarioRepository.findById(idDoUsuarioLogado)
 				.orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
 		Livro livro = livroRepository.findById(request.livroId())
 				.orElseThrow(() -> new RecursoNaoEncontradoException("Livro não encontrado."));
@@ -67,10 +67,10 @@ public class EstanteService {
 	}
 
 	@Transactional
-	public EstanteResponse atualizar(UUID id, EstanteAtualizacaoRequest request) {
+	public EstanteResponse atualizar(UUID id, EstanteAtualizacaoRequest request, UUID idDoUsuarioLogado) {
 		validarDatas(request.dataInicio(), request.dataFim());
 		EstanteUsuario item = buscarItem(id);
-		validarTitularidade(item, request.usuarioId());
+		validarTitularidade(item, idDoUsuarioLogado);
 		item.setStatus(request.status());
 		item.setDataInicio(request.dataInicio());
 		item.setDataFim(request.dataFim());
@@ -78,9 +78,9 @@ public class EstanteService {
 	}
 
 	@Transactional
-	public void remover(UUID id, UUID usuarioId) {
+	public void remover(UUID id, UUID idDoUsuarioLogado) {
 		EstanteUsuario item = buscarItem(id);
-		validarTitularidade(item, usuarioId);
+		validarTitularidade(item, idDoUsuarioLogado);
 		estanteRepository.delete(item);
 	}
 
@@ -99,8 +99,8 @@ public class EstanteService {
 				.orElseThrow(() -> new RecursoNaoEncontradoException("Item da estante não encontrado."));
 	}
 
-	private static void validarTitularidade(EstanteUsuario item, UUID usuarioId) {
-		if (!item.getUsuario().getId().equals(usuarioId)) {
+	private static void validarTitularidade(EstanteUsuario item, UUID idDoUsuarioLogado) {
+		if (!item.getUsuario().getId().equals(idDoUsuarioLogado)) {
 			throw new AcessoNegadoException("Somente o dono do item pode alterá-lo ou removê-lo.");
 		}
 	}
